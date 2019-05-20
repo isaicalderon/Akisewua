@@ -7,7 +7,7 @@
 	$errorFatal = false;
 
 	# Verificando que no haya un pedido con este producto
-	$result = mysqli_query($con, "SELECT pp.ID from pedidos_proceso pp, cotizaciones coti WHERE pp.ID_Coti = coti.ID AND coti.ID_Prod = $id") or die(mysqli_error($con));
+	$result = mysqli_query($con, "SELECT * from pedidos WHERE ID_Prod = $id") or die(mysqli_error($con));
 	$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 	if ($row['ID'] > 0) {
 		$errorFatal = true;

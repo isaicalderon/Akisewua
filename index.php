@@ -17,12 +17,14 @@
 		<link href="css/admin.css" rel="stylesheet">
 		<link href="css/carousel.css" rel="stylesheet">
 		<link href="css/index.css" rel="stylesheet">
+		<link href="css/modal-login.css" rel="stylesheet">
 		<link href="css/dialog.css" rel="stylesheet">
 	    <link href="css/dialog-sandra.css" rel="stylesheet">
 	    <link href="css/ns-default.css" rel="stylesheet">
     	<link href="css/ns-style-growl.css" rel="stylesheet">
 		<script src="js/modernizr.custom.js"></script>
-	    
+	    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		
 	</head>
 	<body>
 		<header>
@@ -166,7 +168,7 @@
 			<!-- FOOTER -->
 			<footer class="container">
 				<p class="float-right"><a href="#">Arriba</a></p>
-				<p>&copy; Aki sewua, Inc. Developers 2018 &middot; <a href="#">Privacidad</a> &middot; <a href="#">Términos y condiciones</a>
+				<p>&copy; Aki sewua, Inc. Developers 2019 &middot; <a href="#">Privacidad</a> &middot; <a href="#">Términos y condiciones</a>
 					&middot; <a href="mapa.php">Mapa</a></p>
 			</footer>
 		</main>

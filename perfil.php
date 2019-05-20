@@ -179,7 +179,7 @@
 				</div>
 				<div class="row">
 		          <div class="col-md-12">
-		          	<h4>Cotizaciones</h4>
+		          	<h4>Pedidos</h4>
 		            <table class="tablaAlum">
 		                <thead>
 		                    <tr>
@@ -196,7 +196,7 @@
 		                    	
 	                            //$query = sqlsrv_query($con, "SELECT * FROM verAlumnos");
 	                            $query = mysqli_query($con, 
-	                            	"SELECT p.ID, p.Descripcion, p.ID_User, p.Fecha, p.status FROM cotizaciones p, clientes c WHERE p.ID_User = c.ID AND p.ID_User = ".$_SESSION['id_user']." ORDER BY p.ID DESC");
+	                            	"SELECT p.ID, p.Descripcion, p.ID_User, p.Fecha, p.status FROM pedidos p, clientes c WHERE p.ID_User = c.ID AND p.ID_User = ".$_SESSION['id_user']." ORDER BY p.ID DESC");
 	                  	 	   	$estado = "Pendiente";
 	                  	 	    while($row2 = mysqli_fetch_array($query, MYSQLI_ASSOC)){
 									if ($row2['status'] == 1) {
@@ -280,109 +280,9 @@
 		          </div>
 		        </div>
 		        <hr class="mb-4">
-				<div class="row">
-		          <div class="col-md-12">
-		            <h4>Pedidos</h4>
-		            <table class="tablaAlum">
-		                <thead>
-		                    <tr>
-		                        <th>Num. Pedido</th>
-		                        <th>Concepto venta</th>
-		                        <th>Monto inicial</th>
-		                        <th>Costo total</th>
-		                        <th>Fecha entrega</th>
-	                        	<th>Opciones</th>
-		                    </tr>
-						</thead>
-		                <tbody>
-		                    <?php
-		                    	$query = mysqli_query($con, 
-	                            	"SELECT pp.ID, pp.ID_Coti, pp.Concepto_venta, pp.Monto_total, pp.Monto_inicial, pp.Fecha_final FROM pedidos_proceso pp, cotizaciones coti, clientes c WHERE pp.ID_Coti = coti.ID AND coti.ID_User = c.ID AND coti.ID_User = ".$_SESSION['id_user']." AND pp.status = 0  ORDER BY ID DESC");
-	                  	 	    $estado = "Eliminado";
-								while($row2 = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-									echo "
-		                                <tr>
-		                                    <td>".$row2['ID']."</td>
-		                                    <td>".$row2['Concepto_venta']."</td>
-		                                    <td>$".$row2['Monto_inicial']." USD</td>
-		                                    <td>$".$row2['Monto_total']." USD</td>
-		                                    <td>".$row2['Fecha_final']."</td>
-
-		                                    <td>
-			                                    <div class='btn-group' role='group'>
-			                                    	<button onclick=\"window.location.href = 'verpedido.php?id=".$row2['ID']."';\" class='btn btn-sm btn-outline-secondary'>Ver pedido</button>
-			                                    	<button onclick=\"window.location.href = 'mensajes.php?id=".$row2['ID_Coti']."&nusr=".$_SESSION['id_user']."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>
-												</div>
-		                                    </td>
-										</tr>
-		                            " ;
-		                        }
-		                    ?>
-		                </tbody>
-		            </table>
-	            		<!--
-	            		<form id="form1" action="" method="post">
-		                    <p>
-		                    <button class="btn btn-primary" role="button" id="cancelarP">Eliminar</button>
-		                   	<input class="form-control login-field" style="width:10%;display:inline;"
-		                           placeholder="ID" required id="ID_PP" name="id"/>
-		                    </p>
-		                </form>
-						-->
-		          </div>
-		        </div>
 		        <a name="vt"></a>
 
-		        <hr class="mb-4">
-				<div class="row">
-		          <div class="col-md-12">
-		            <h4>Mensajes</h4>
-		            <table class="tablaAlum">
-		                <thead>
-		                    <tr>
-		                        <th>Num. Cotizacion</th>
-		                        <th>Remitente</th>
-		                        <th>Mensaje</th>
-		                        <th>Fecha envíado</th>
-
-		                    </tr>
-						</thead>
-		                <tbody>
-		                    <?php
-	                    		$tmp = "LIMIT 5";
-	                    		if (@$_GET['vt'] == 1) {
-	                    			$tmp = "";
-	                    		}
-	                            $query = mysqli_query($con, 
-	                            	"SELECT a.Names, m.Mensaje, m.ID_Coti, c.Nombres, c.Apellidos,m.Para, m.Fecha FROM mensajes_coti m, clientes c, admin a WHERE m.Para = ".$_SESSION['id_user']." AND a.ID+1000 = m.De AND m.Para = c.ID ORDER BY m.ID DESC ".$tmp)or die(mysqli_error($con));
-		                  	 	     
-		                        while($row2 = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-                        			if ($row2['Para'] == $_SESSION['id_user']) {
-                        				echo "
-			                                <tr>
-		                                    	<td>".$row2['ID_Coti']."</td>
-			                                    <td>".$row2['Names']."</td>
-			                                    <td>".$row2['Mensaje']."</td>
-			                                    <td>".$row2['Fecha']."</td>
-			                                </tr>
-			                            " ;
-                        			}
-		                        }
-		                      	 
-		                    ?>
-		                </tbody>
-		            </table>
-		            <?php 
-		            	if (@$_GET['vt'] == 1) {
-            		?>
-        			<button class="btn btn-primary" role="button" onclick="window.location.href='perfil.php?#vt'">Regresar</
-            		<?php  
-	            		}else{
-					?>
-            	    <button class="btn btn-primary" role="button" onclick="window.location.href='perfil.php?vt=1#vt'">Ver todos</button>
-                   	<?php } ?>        
-	        	  </div>
-		        </div>
+		        <hr class="mb-4">				
 		        
 
 			</div>

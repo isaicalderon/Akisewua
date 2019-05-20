@@ -38,3 +38,9 @@
     text-align: left;
     padding: 8px;
 }
+.valid-input{
+    border-color: #28a745;
+}
+.novalid-input{
+    border-color: #dc3545;
+}

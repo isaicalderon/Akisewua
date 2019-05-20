@@ -17,6 +17,7 @@
         <link href="css/admin.css" rel="stylesheet">
         <link href="css/carousel.css" rel="stylesheet">
         <link href="css/index.css" rel="stylesheet">
+        <link href="css/modal-login.css" rel="stylesheet">
         <link href="css/dialog.css" rel="stylesheet">
         <link href="css/dialog-sandra.css" rel="stylesheet">
         <link href="css/ns-default.css" rel="stylesheet">

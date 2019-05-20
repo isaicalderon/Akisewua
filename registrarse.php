@@ -65,20 +65,20 @@
 
 		<main role="main">
 			<div class="container" style="margin-top: 2%">
-				<div class="col-md-8 order-md-1">
+				<div class="col-md-12 order-md-1">
 					<h4 class="mb-3">Ingrese sus datos</h4>
-		<?php 
-			if ($edit) {
-				echo "
-					<form class='needs-validation' novalidate method='post' action='php/editUser.php' >
-						<input style='display:none' value='".$id."' name='id_user'>
-				";
-			}else{
-				echo "
-					<form class='needs-validation' novalidate method='post' action='php/registrarUsuario.php' >
-				";
-			}
-		 ?>
+							<?php 
+								if ($edit) {
+									echo "
+										<form class='needs-validation' novalidate method='post' action='php/editUser.php' >
+											<input style='display:none' value='".$id."' name='id_user'>
+									";
+								}else{
+									echo "
+										<form class='needs-validation' novalidate method='post' action='php/registrarUsuario.php' >
+									";
+								}
+							?>
 						<div class="row">
 							<div class="col-md-6 mb-3">
 								<label for="firstName">Nombre<span class="text-muted">(s)</span></label>
@@ -99,8 +99,8 @@
 						</div>
 						<div class="mb-3">
 							<label for="email">Correo electrónico</label>
-							<input name="email" type="email" class="form-control" id="email" placeholder="email@example.com" required <?php if($edit){echo "disabled value='".$row['Email']."'";} ?>>
-							<div class="invalid-feedback">
+							<input id='id_email' name="email" type="email" class="form-control" id="email" placeholder="email@example.com" required <?php if($edit){echo "disabled value='".$row['Email']."'";} ?>>
+							<div id='statusEmail' class="invalid-feedback" >
 								Ingrese una cuenta de email.
 							</div>
 						</div>
@@ -191,6 +191,7 @@
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		-->
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-slim.min.js"><\/script>')</script>
+		<script src="js/jquery-3.4.1.min.js"></script>
 		<script src="js/vendor/popper.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
@@ -199,12 +200,38 @@
 		<script src="js/grayscale.min.js"></script>
 	    <script src="js/classie.js"></script>
 	    <script src="js/dialogFx.js"></script>
+
+			<script>
+				$(document).ready(function(){
+					$("#id_email").change(function(event){
+						//console.log(this.value)						
+						var params = {
+							email: this.value
+						}
+						$.get('php/rest/getEmail.php', params, function(response){
+							if(response == 200){
+								//console.log(tthis);
+								$("#id_email").removeClass('novalid-input');	
+								$("#id_email").addClass('valid-input');
+								$("#statusEmail").css("display", "none");
+							}else{
+								$("#id_email").removeClass('valid-input');	
+								$("#id_email").addClass('novalid-input');						
+								$("#statusEmail").css("display", "block");
+								$("#statusEmail").html('El correo escrito ya esta en uso');								
+							}
+						});
+						
+					});
+				});
+			</script>
+
 	    <script type="text/javascript">
 			$(document).ready(function() {
 				//variables
 				var pass1 = $('[name=pass1]');
 				var pass2 = $('[name=pass2]');
-				var confirmacion = "Las contraseñas si coinciden";
+				var confirmacion = "Las contraseñas coinciden";
 				var longitud = "La contraseña debe estar formada entre 6-10 carácteres (ambos inclusive)";
 				var negacion = "No coinciden las contraseñas";
 				var vacio = "La contraseña no puede estar vacía";
@@ -225,10 +252,8 @@
 
 					if(valor1.length > 0 && valor1 == valor2){
 						span.text(confirmacion).removeClass("error").addClass('noerror');
-							$("#boton").removeAttr("disabled","");
-					
+							$("#boton").removeAttr("disabled","");			
 					}
-
 				}
 				//ejecuto la función al soltar la tecla
 				pass2.keyup(function(){

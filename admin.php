@@ -52,13 +52,11 @@
 	                <li class="sidebar-brand"><a href="#">Menú principal</a></li>
 	                <li><a href="#" id="1" class="menu">Clientes Nuevos</a></li>
 	                <li><a href="#" id="5" class="menu">Productos</a></li>
-	                <li><a href="#" id="9" class="menu">Cotizaciones</a></li>
+	                <li><a href="#" id="6" class="menu">Proveedores</a></li>
 	                <li><a href="#" id="3" class="menu">Pedidos</a></li>
-	                <li><a href="#" id="4" class="menu">Pedidos finalizados</a></li>
 	                <li><a href="#" id="8" class="menu">Productos populares</a></li>
 	                <li><a href="#" id="10" class="menu">Reporte de ventas</a></li>
-	                <li><a href="#" id="6" class="menu">Mensajes</a></li>
-	                <li><a href="#" id="7" class="menu">Contacto y ayuda</a></li>
+					<li><a href="#" id="7" class="menu">Contacto y ayuda</a></li>
 	            </ul>
 	        </div>
 	        <!-- /#sidebar-wrapper -->
@@ -151,6 +149,8 @@
 		        					<tr>
 		        						<th>ID</th>
 		        						<th>Descripción</th>
+		        						<th>Precio</th>
+		        						<th>Stock</th>
 		        						<th>Imagen</th>
 		        						<th>Altura</th>
 		        						<th>Categoria</th>
@@ -166,32 +166,36 @@
 		        							echo "
 		        								<tr>
 		        									<td>".$row['ID']."</td>
-		        									<td>".$row['Descripcion']."</td>
-		        									<td>
-		        									<button class='btn btn-link' data-toggle='modal' data-target='#modal".$row['ID']."'><img src='php/getImg.php?ID=".$row['ID']."' style='width:25px;height:25px;' class='img-thumbnail'> Imagen</button>
-	        										<!-- Modal -->
-													<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-													    <div class='modal-dialog' role='document'>
-													        <div class='modal-content'>
-													            <div class='modal-header'>
-													                <label>".$row['Descripcion']."</label>
-													                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-													                <span aria-hidden='true'>&times;</span>
-													                </button>
-													            </div>
-													            <div class='modal-body'>
-													                <img src='php/getImg.php?ID=".$row['ID']."' class='img-fluid' style='width:100%;height:auto;'>
-													            </div>
-													        </div>
-													    </div>
-													</div>
+													<td>".$row['Descripcion']."</td>
+													<td>$".$row['precio'].".00</td>
+													<td>".$row['stock']."</td>
+													<td>
+														<button class='btn btn-link' data-toggle='modal' data-target='#modal".$row['ID']."'>
+															<img src='".$row['url_img']."' style='width:25px;height:25px;' class='img-thumbnail'> ".$row['url_img']."
+														</button>
+														<!-- Modal -->
+														<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+															<div class='modal-dialog' role='document'>
+																<div class='modal-content'>
+																	<div class='modal-header'>
+																		<label>".$row['Descripcion']."</label>
+																		<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																		<span aria-hidden='true'>&times;</span>
+																		</button>
+																	</div>
+																	<div class='modal-body'>
+																		<img src='".$row['url_img']."' class='img-fluid' style='width:100%;height:auto;'>
+																	</div>
+																</div>
+															</div>
+														</div>
 		        									</td>
 		        									<td>".$row['alto']."</td>
 		        									<td>".$row['Categoria']."</td>
 		        									<td>".$row['Fecha_insert']."</td>
 	        										<td>
 	        											<div class='btn-group'>
-		        											<button onclick=\"window.location.href = 'agregarproducto.php?id=".$row['ID']."&val=".$row['Descripcion']."&alto=".$row['alto']."';\" class='btn btn-sm btn-outline-secondary'>Editar</button>
+		        											<button onclick=\"window.location.href = 'agregarproducto.php?id=".$row['ID']."&img=".$row['url_img']."&price=".$row['precio']."&stock=".$row['stock']."&val=".$row['Descripcion']."&alto=".$row['alto']."';\" class='btn btn-sm btn-outline-secondary'>Editar</button>
 								                		
 								                			<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalDel".$row['ID']."'>Eliminar</button>
 							                				<!-- Modal -->
@@ -226,84 +230,43 @@
 		        			<a class='btn btn-primary' href='agregarproducto.php'  role='button'>Agregar producto</a>
 	        			</div>
 					</div>
-					<!-- Cotizaciones LISTO -->
-	        		<div class="row abs block" id="19">
-			          <div class="col-md-10">
-			            <h4>Cotizaciones</h4>
-			            <table class="tablaAlum">
-			                <thead>
-			                    <tr>
-			                        <th>Descripción</th>
-			                        <th>Nombre cliente</th>
-			                        <th>Fecha</th>
-			                        <th>Opciones</th>
-			                    </tr>
-							</thead>
-			                <tbody>
-			                    <?php
-			                    	$query = mysqli_query($con, 
-		                            	"SELECT p.ID, p.ID_Prod,p.ID_User, p.Descripcion, c.Nombres,c.Apellidos,p.status,p.Fecha, pp.alto FROM clientes c, cotizaciones p, productos pp WHERE pp.ID = p.ID_Prod AND c.ID = p.ID_User ORDER BY ID DESC");
-			                  	 	while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-			                        	if ($row['status'] < 2) {
-			                        		echo "
-				                                <tr>
-				                                    <td>".$row['Descripcion']."</td>
-				                                    <td>".$row['Nombres']." ".$row['Apellidos']."</td>
-				                                    <td>".$row['Fecha']."</td>
-			                                    	<td>
-			                                    		<div class='btn-group' role='group'>
-
-			                                    			<button onclick=\"window.location.href = 'vercotizacion.php?id=".$row['ID']."';\" class='btn btn-sm btn-outline-secondary'>Ver cotización</button>
-	                            			";
-	                        				if ($row['status'] == 1) {
-                        						echo "
-                        									<button onclick=\"window.location.href = 'mensajes.php?id=".$row['ID']."&nusr=".$row['ID_User']."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>
-                        						";
-	                        				}
-	                            			echo "
-			                                    			<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalCoti".$row['ID']."'>Cancelar</button>
-		                                    			</div>
-			                                    		<!-- Modal -->
-														<div class='modal fade' id='modalCoti".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-														    <div class='modal-dialog' role='document'>
-														        <div class='modal-content'>
-														            <div class='modal-header'>
-														                <h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-														                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-														                <span aria-hidden='true'>&times;</span>
-														                </button>
-														            </div>
-														            <div class='modal-body'>
-														                Seguro deseas cancelar esta cotización?
-														            </div>
-														            <div class='modal-footer'>
-														                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarCotizacion.php?id=".$row['ID']."';\">Continuar</button>
-														                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-														            </div>
-														        </div>
-														    </div>
-														</div>
-													</td>
-			                                    </tr>
-				                            " ;
-			                        	}else{
-			                        		if (@$co == 1) {
-			                        			echo "
-					                                <tr>
-					                                    <td>".$row['Descripcion']."</td>
-					                                    <td>".$row['Nombres']." ".$row['Apellidos']."</td>
-					                                    <td>".$row['Fecha']."</td>
-				                                    	<td>
-				                                    		<div class='btn-group' role='group'>
-															<button onclick=\"window.location.href = 'vercotizacion.php?id=".$row['ID']."';\" class='btn btn-sm btn-outline-secondary'>Ver cotización</button>
-		                            			";
-		                        				if ($row['status'] == 1) {
-		                        					echo "<button onclick=\"window.location.href = 'mensajes.php?id=".$row['ID']."&nusr=".$row['ID_User']."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>";
-		                        				}
-		                            			echo "
-				                                    		<button data-toggle='modal' data-target='#modal".$row['ID']."' class='btn btn-sm btn-outline-secondary'>Eliminar</button>
-				                                    		<!-- Modal -->
-															<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+					<!-- Proveedores LISTO -->
+	        		<div class="row abs block" id="16">
+	        			<div class="col-md-10">
+	        				<h4>Proveedores</h4>
+		        			<table class="tablaAlum">
+		        				<thead>
+		        					<tr>
+		        						<th>ID</th>
+		        						<th>Nombres</th>
+		        						<th>Direccion</th>
+		        						<th>Telefonos</th>
+		        						<th>Empresa</th>
+		        						<th>Correo</th>
+	        							<th>CP</th>
+	        							<th>Opciones</th>
+	        						</tr>
+		        				</thead>
+		        				<tbody>
+		        					<?php 
+		        						$query = mysqli_query($con, "SELECT * FROM proveedores");
+		        						while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+		        							echo "
+		        								<tr>
+		        									<td>".$row['ID']."</td>
+													<td>".$row['Nombre']."</td>
+													<td>".$row['Direccion']."</td>
+													<td>".$row['Telefono']."</td>
+		        									<td>".$row['Empresa']."</td>
+		        									<td>".$row['Correo']."</td>
+		        									<td>".$row['CP']."</td>
+	        										<td>
+	        											<div class='btn-group'>
+		        											<button onclick=\"window.location.href = 'agregarproveedor.php?id=".$row['ID']." '\" class='btn btn-sm btn-outline-secondary'>Editar</button>
+								                		
+								                			<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#prov".$row['ID']."'>Eliminar</button>
+							                				<!-- Modal -->
+															<div class='modal fade' id='prov".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
 															    <div class='modal-dialog' role='document'>
 															        <div class='modal-content'>
 															            <div class='modal-header'>
@@ -313,25 +276,86 @@
 															                </button>
 															            </div>
 															            <div class='modal-body'>
-															                Seguro deseas eliminar esta cotización?
+															                Seguro deseas borrar este proveedor?
 															            </div>
 															            <div class='modal-footer'>
-															                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/deleteCotizacion.php?id=".$row['ID']."';\">Continuar</button>
+															                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/deleteProv.php?id=".$row['ID']."';\">Continuar</button>
 															                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
 															            </div>
 															        </div>
 															    </div>
 															</div>
-															
-				                                    		</div>	
-				                                    	</td>
-				                                    </tr>
-					                            " ;
-			                        		}
-			                        	}
 
-
-			                        }
+							                			</div>
+	        										</td>
+		        								</tr>
+		        							";
+		        						}
+		        					 ?>
+		        				</tbody>
+		        			</table>
+		        			<a class='btn btn-primary' href='agregarproveedor.php'  role='button'>Agregar proveedor</a>
+	        			</div>
+					</div>	
+					<!-- Pedidos LISTO -->
+	        		<div class="row abs block" id="13">
+			          <div class="col-md-10">
+			            <h4>Pedidos</h4>
+			            <table class="tablaAlum">
+			                <thead>
+			                    <tr>
+			                        <th></th>
+			                        <th>Producto</th>
+			                        <th>Nombre cliente</th>
+			                        <th>Cantidad</th>
+			                        <th>Total</th>
+			                        <th>Fecha pedido</th>
+			                        <th>Fecha entrega</th>
+			                        <th>Opciones</th>
+			                    </tr>
+							</thead>
+			                <tbody>
+			                    <?php
+			                    	$query = mysqli_query($con, 
+		                            	"SELECT ped.ID, p.Descripcion, p.url_img, c.Nombres, c.Apellidos, ped.cantidad, ped.total, ped.Fecha, ped.fecha_entrega FROM productos p, clientes c, pedidos ped WHERE ped.ID_Prod = p.ID AND c.ID = ped.ID_Cliente");
+			                  	 	while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+										echo "
+											<tr>
+												<td style='width: 1px;'><img src='".$row['url_img']."' class='' style='width:50px;height:50px;'></td>
+												<td>".$row['Descripcion']."</td>
+												<td>".$row['Nombres']." ".$row['Apellidos']."</td>
+												<td>".$row['cantidad']."</td>
+												<td>".$row['total']."</td>
+												<td>".$row['Fecha']."</td>
+												<td>".$row['fecha_entrega']."</td>
+												<td>
+													<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalProv".$row['ID']."'>Eliminar</button>
+							                				
+													<!-- Modal -->
+													<div class='modal fade' id='modalProv".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+														<div class='modal-dialog' role='document'>
+															<div class='modal-content'>
+																<div class='modal-header'>
+																	<h5 class='modal-title' id='modalLabel'>Mensaje</h5>
+																	<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																	<span aria-hidden='true'>&times;</span>
+																	</button>
+																</div>
+																<div class='modal-body'>
+																	Seguro deseas cancelar esta cotización?
+																</div>
+																<div class='modal-footer'>
+																	<button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarPedido.php?id=".$row['ID']."';\">Continuar</button>
+																	<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
+											</tr>
+										" ;
+			                        	
+									}
 			                        
 			                    ?>
 			                </tbody>
@@ -349,239 +373,6 @@
 		                    	}
 		                     ?>
 		                    </form>
-			          </div>
-			        </div>
-					<!-- Pedidos LISTO -->
-	        		<div class="row abs block" id="13">
-			          <div class="col-md-12 ">
-			            <h4>Pedidos en proceso</h4>
-			            <table class="tablaAlum">
-			                <thead>
-			                    <tr>
-			                        <th>Num. Pedido</th>
-			                        <th>Nombre cliente</th>
-			                        <th>Descripción</th>
-			                        <th>Concepto venta</th>
-			                        <th>Fecha entrega</th>
-									<th>Opciones</th>
-								</tr>
-							</thead>
-			                <tbody>
-			                    <?php
-			                    	$query = mysqli_query($con, "SELECT pp.ID,pp.ID_Coti, c.Nombres, pp.Descripcion,pp.Concepto_venta, pp.Monto_inicial, pp.Monto_total, pp.Fecha_inicio, pp.Fecha_final, pp.status, coti.ID_User FROM pedidos_proceso pp, clientes c, cotizaciones coti WHERE pp.ID_Coti = coti.ID AND coti.ID_User = c.ID ORDER BY pp.ID DESC");
-		                  	 	    $estado = "Proceso";
-			                        while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-			                        	if ($row['status'] == 0) {
-			                        		echo "
-				                                <tr>
-				                                    <td>".$row['ID']."</td>
-				                                    <td>".$row['Nombres']."</td>
-				                                    <td>".$row['Descripcion']."</td>
-				                                    <td>".$row['Concepto_venta']."</td>
-													<td>".$row['Fecha_final']."</td>
-				                                    <td>
-					                                    <div class='btn-group' role='group'>
-					                                    	<button onclick=\"window.location.href = 'verpedido.php?id=".$row['ID']."';\" class='btn btn-sm btn-outline-secondary'>Ver pedido</button>
-					                                    	<button onclick=\"window.location.href = 'mensajes.php?id=".$row['ID_Coti']."&nusr=".$row['ID_User']."&ped=".$row["ID"]."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>
-				                                    		<button onclick=\"window.location.href='cancelar-pedido.php?id=".$row['ID']."';\" class='btn btn-sm btn-outline-secondary'>Cancelar pedido</button>
-				                                    		<!-- Modal 
-															<div class='modal fade' id='modalCan".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-															    <div class='modal-dialog' role='document'>
-															        <div class='modal-content'>
-															            <div class='modal-header'>
-															                <h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-															                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-															                <span aria-hidden='true'>&times;</span>
-															                </button>
-															            </div>
-															            <div class='modal-body'>
-															                Seguro deseas cancelar este pedido?
-															            </div>
-															            <div class='modal-footer'>
-															                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarPedidoProceso.php?id=".$row['ID']."&id_user=".$row['ID_User']."';\">Continuar</button>
-															                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-															            </div>
-															        </div>
-															    </div>
-															</div>
-															-->
-				                                    	</div>
-				                                    </td>
-												</tr>
-				                            " ;
-			                            }else{
-			                            	if (@$ped == 1) {
-			                            		if ($row['status'] == 1) {
-			                            			$estado = "Finalizado";
-			                            		}elseif ($row['status'] == 2) {
-			                            			$estado = "Cancelado";
-			                            		}
-			                            		echo "
-					                                <tr>
-						                                <td>".$row['ID']."</td>
-					                                    <td>".$row['Nombres']."</td>
-					                                    <td>".$row['Descripcion']."</td>
-					                                    <td>".$row['Concepto_venta']."</td>
-														<td>".$row['Fecha_final']."</td>
-					                                    <td>
-						                                    <div class='btn-group' role='group'>
-						                                    	<button onclick=\"window.location.href = 'verpedido.php?id=".$row['ID']."';\" class='btn btn-sm btn-outline-secondary'>Ver pedido</button>
-						                                    	<button onclick=\"window.location.href = 'mensajes.php?id=".$row['ID_Coti']."&nusr=".$row['ID_User']."&ped=".$row["ID"]."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>
-					                                    	</div>
-					                                    </td>
-													</tr>
-					                            " ;
-			                            	}
-			                            }
-			                            $estado = "Proceso";
-			                        }
-			                        
-			                    ?>
-			                </tbody>
-			            </table>
-		            		<?php 
-		                    	if (@$ped == 0) {
-		                    		echo "
-		                    		<a class='btn btn-primary' href='admin.php?ped=1&pedidos=1' id='2' role='button'>Ver todos</a>
-		                    		";		
-		                    	}else{
-		                    		echo "
-		                    		<a class='btn btn-primary' href='admin.php?pedidos=1' id='2' role='button'>Ocultar</a>
-		                    		";
-		                    	}
-	                     	?>
-		                    	
-			          </div>
-			        </div>
-			        <!-- Pedido_Fin LISTO -->
-	        		<div class="row abs block" id="14">
-			          <div class="col-md-10">
-			            <h4>Pedidos finalizados</h4>
-			            <table class="tablaAlum">
-			                <thead>
-			                    <tr>
-			                        <th>Nombre cliente</th>
-			                        <th>Producto</th>
-			                        <th>Estado</th>
-			                        <th>Fecha finalizado</th>
-			                        <th>Opciones</th>
-			                    </tr>
-							</thead>
-			                <tbody>
-			                    <?php
-			                    	$query = mysqli_query($con, "SELECT pp.ID,pp.Descripcion, pp.Concepto_venta,coti.ID_Prod, c.Nombres, c.Apellidos, pp.status, pp.Fecha_final FROM pedidos_proceso pp, cotizaciones coti, clientes c WHERE pp.ID_Coti = coti.ID AND coti.ID_User = c.ID AND pp.status > 0 ORDER BY pp.ID DESC");
-			                  	 	while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-			                        	if($row['status'] == 1){
-			                        		$estado = "Finalizado";
-			                        	}else if($row['status'] == 2){
-			                        		$estado = "Cancelado";
-			                        	}
-										echo "
-			                                <tr>
-			                                    <td>".$row['Nombres']." ".$row['Apellidos']."</td>
-			                                    <td>
-		        									<button class='btn btn-link' data-toggle='modal' data-target='#modalImg".$row['ID_Prod']."'><img src='php/getImg.php?ID=".$row['ID_Prod']."' style='width:25px;height:25px;' class='img-thumbnail'> Imagen</button>
-	        										<!-- Modal -->
-													<div class='modal fade' id='modalImg".$row['ID_Prod']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-													    <div class='modal-dialog' role='document'>
-													        <div class='modal-content'>
-													            <div class='modal-header'>
-													                <label>".$row['Concepto_venta']."</label>
-													                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-													                <span aria-hidden='true'>&times;</span>
-													                </button>
-													            </div>
-													            <div class='modal-body'>
-													                <img src='php/getImg.php?ID=".$row['ID_Prod']."' class='img-fluid' style='width:100%;height:auto;'>
-													            </div>
-													        </div>
-													    </div>
-													</div>
-	        									</td>
-			                                    <td>".$estado."</td>
-			                                    <td>".$row['Fecha_final']."</td>
-			                                    <td>
-			                                    	<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modal".$row['ID']."'>Eliminar</button>
-			                                    	<!-- Modal -->
-													<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-													    <div class='modal-dialog' role='document'>
-													        <div class='modal-content'>
-													            <div class='modal-header'>
-													                <h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-													                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-													                <span aria-hidden='true'>&times;</span>
-													                </button>
-													            </div>
-													            <div class='modal-body'>
-													                Seguro deseas eliminar este pedido finalizado?
-													            </div>
-													            <div class='modal-footer'>
-													                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/eliminarFinalizado.php?id=".$row['ID']."';\">Continuar</button>
-													                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-													            </div>
-													        </div>
-													    </div>
-													</div>
-			                                    </td>
-			                                </tr>
-			                            " ;
-			                        }
-			                        
-			                    ?>
-			                </tbody>
-			            </table>
-
-			          </div>
-			        </div>
-					<!-- Mensajes LISTO -->
-			        <div class="row abs block" id="16">
-			          <div class="col-md-10">
-			            <h4>Mensajes</h4>
-			            <table class="tablaAlum">
-			                <thead>
-			                    <tr>
-			                    	<th>Mensaje</th>
-			                        <th>Enviado por</th>
-			                        <th>Para</th>
-			                        <th>Opciones</th>
-			                        
-		                        </tr>
-
-			                </thead>
-			                <tbody>
-			                    <?php
-			                    	
-		                            //$query = sqlsrv_query($con, "SELECT * FROM verAlumnos");
-		                            $query = mysqli_query($con, 
-		                            	"SELECT * FROM mensajes_coti");
-	                  	 	     	
-			                        while($row2 = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-	                        			//if ($row2['Para'] == $_SESSION['id_user']) {
-	                        				echo "
-				                                <tr>
-				                                    <td>".$row2['Mensaje']." </td>
-			                                    	<td>".$row2['De']." </td>
-			                                    	<td>".$row2['Para']."</td>
-			                                    	<td>
-			                                    		<button onclick=\"window.location.href = 'php/eliminarMensaje.php?id=".$row2['ID']."';\" class='btn btn-sm btn-outline-secondary'>Eliminar</button>
-			                                    	</td>
-				                                </tr>
-				                            " ;
-	                        			//}
-			                        }
-			                      	 
-			                    ?>
-			                </tbody>
-			            </table>
-		            		<!--
-		            		<form id="form1" action="" method="post">
-			                    <p>
-			                    <button class="btn btn-primary" role="button" id="cancelarP">Eliminar</button>
-			                   	<input class="form-control login-field" style="width:10%;display:inline;"
-			                           placeholder="ID" required id="ID_PP" name="id"/>
-			                    </p>
-			                </form>
-							-->
 			          </div>
 			        </div>
 			        <!-- Contacto LISTO -->
@@ -632,13 +423,15 @@
 	        					</thead>
 	        					<tbody>
 	        						<?php 
-				        				$query = mysqli_query($con, "SELECT p.ID, p.alto, pp.ID_Prod, p.Descripcion, p.Fecha_insert,pp.Contador FROM productos p, populares pp WHERE p.ID = pp.ID_Prod ORDER BY pp.Contador DESC")or die(mysqli_error($con));
+				        				$query = mysqli_query($con, "SELECT p.ID, p.alto, pp.ID_Prod, p.url_img, p.Descripcion, p.Fecha_insert,pp.Contador FROM productos p, populares pp WHERE p.ID = pp.ID_Prod ORDER BY pp.Contador DESC")or die(mysqli_error($con));
 			                            while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
 											echo "
 												<tr>
 													<td>".$row['Descripcion']."</td>
 													<td>
-														<button class='btn btn-link' data-toggle='modal' data-target='#modalPop".$row['ID_Prod']."'><img src='php/getImg.php?ID=".$row['ID_Prod']."' style='width:25px;height:25px;' class='img-thumbnail'> Imagen</button>
+														<button class='btn btn-link' data-toggle='modal' data-target='#modalPop".$row['ID_Prod']."'>
+															<img src='".$row['url_img']."' style='width:25px;height:25px;' class='img-thumbnail'> Imagen
+														</button>
 		        										<!-- Modal -->
 														<div class='modal fade' id='modalPop".$row['ID_Prod']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
 														    <div class='modal-dialog' role='document'>
@@ -650,7 +443,7 @@
 														                </button>
 														            </div>
 														            <div class='modal-body'>
-														                <img src='php/getImg.php?ID=".$row['ID_Prod']."' class='img-fluid' style='width:100%;height:auto;'>
+														                <img src='".$row['url_img']."' class='img-fluid' style='width:100%;height:auto;'>
 														            </div>
 														            <div class='modal-footer'>
 														                
@@ -771,7 +564,7 @@
 						last = 3;
 					";
 				}
-				if (@$_POST['mensajes']!="") {
+				if (@$_POST['prov']!=""||@$_GET['prov']!="") {
 					echo "
 						$('#11').attr('class','row abs block');
 						$('#16').attr('class','row abs');
@@ -893,10 +686,10 @@
 	        notification.show();
 	        <?php } ?>
 
-	        <?php if(@$_POST['mensajes']!=""){ ?>
+	        <?php if(@$_POST['prov']!=""){ ?>
 	        // create the notification
 	        var notification = new NotificationFx({
-	            message : '<p><?php echo @$_POST['mensajes'];?></p>',
+	            message : '<p><?php echo @$_POST['prov'];?></p>',
 	            layout : 'growl',
 	            effect : 'jelly',
 	            type : 'notice', // notice, warning, error or success

@@ -26,11 +26,12 @@
 		<!-- Custom styles for this template -->
 		<link href="css/carousel.css" rel="stylesheet">
 		<link href="css/index.css" rel="stylesheet">
+		<link href="css/modal-login.css" rel="stylesheet">
 		<link href="css/dialog.css" rel="stylesheet">
-	    <link href="css/dialog-sandra.css" rel="stylesheet">
-	    <link href="css/ns-default.css" rel="stylesheet">
-    	<link href="css/ns-style-growl.css" rel="stylesheet">
-    	<link href="css/form-validation.css" rel="stylesheet">
+		<link href="css/dialog-sandra.css" rel="stylesheet">
+		<link href="css/ns-default.css" rel="stylesheet">
+		<link href="css/ns-style-growl.css" rel="stylesheet">
+		<link href="css/form-validation.css" rel="stylesheet">
     	
 		<script src="js/modernizr.custom.js"></script>
 	    <style type="text/css">

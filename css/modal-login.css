@@ -1,0 +1,129 @@
+
+/* MODAL LOGIN */
+
+.modal-title{
+    text-align: center;
+}
+#menu_h1{
+    float: left;
+    margin-left: 10px;
+    font-size: 25px;
+    margin-top: 10px;
+    color: white;
+}
+
+.form-control-feedback {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: block;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    pointer-events: none;
+}
+.form-control-feedback {
+    /* top: 10px; */
+    /* right: 20px; */
+    top: 21px;
+    right: 23px;
+    right: 23px;
+}
+.form-control2{
+    height: 55px;
+    outline: 0;
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.no-margin-b{
+    margin-bottom: 0px;
+}
+.br-1{
+    border-radius: 5px 5px 0px 0px;
+}
+
+.br-2{
+    border-radius: 0px 0px 5px 5px;
+}
+.no-br-b{
+    border-bottom: 0px;
+}
+
+.br-3{
+    border-radius: 0; 
+}
+
+
+.modal-header {
+        border-bottom: 0px solid #e5e5e5; 
+}
+
+.modal-content {
+    background: #f9f9f9 none repeat scroll 0 0;
+    border-radius: 0px;
+}
+
+.modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 180px 10px;
+}
+.modal-body {
+        position: relative;
+        padding: 0px 70px;
+}
+
+.w-100{
+    width: 100%;
+}
+
+
+@media (min-width: 768px){
+    .modal-dialog {
+
+        width: 450px;
+        margin:200px  auto;
+        width: 450px;
+        margin:200px  auto;
+    }
+}
+
+@media (max-width: 1400px){
+    .modal-dialog {
+        /*margin: 20px 10px;*/
+        margin: auto;
+        margin-top: 20px;
+
+    }
+}
+
+@media (max-width: 900px){
+    .modal-dialog {
+        width: auto;
+        margin: 20px 10px;
+    }
+    .modal-body {
+        position: relative;
+        padding: 0px 20px;
+    }
+    #menu_h1{
+        font-size: 22px;
+    }
+}
+@media (max-width: 340px){
+    #menu_h1{
+        font-size: 15px;
+    }
+}

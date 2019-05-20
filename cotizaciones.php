@@ -22,13 +22,17 @@
 		<link href="css/carousel.css" rel="stylesheet">
 		<link href="css/index.css" rel="stylesheet">
 		<link href="css/dialog.css" rel="stylesheet">
-	    <link href="css/dialog-sandra.css" rel="stylesheet">
-	    <link href="css/ns-default.css" rel="stylesheet">
-    	<link href="css/ns-style-growl.css" rel="stylesheet">
-    	<link href="css/form-validation.css" rel="stylesheet">
-    	
-		<script src="js/modernizr.custom.js"></script>
+		<link href="css/dialog-sandra.css" rel="stylesheet">
+		<link href="css/ns-default.css" rel="stylesheet">
+		<link href="css/ns-style-growl.css" rel="stylesheet">
+		<link href="css/form-validation.css" rel="stylesheet">
+    <script src="js/modernizr.custom.js"></script>
 
+		<style>
+			.tablaAlum th, td {
+				border: none;
+			}
+		</style>
 	    
 	</head>
 	<body>
@@ -39,70 +43,58 @@
 		<main role="main">
 			<div class="container" style="margin-top: 2%">
 				<form class='needs-validation' novalidate method="post" action='php/addCotizacion.php'>
-					<?php  
-						$query = mysqli_query($con, "SELECT * FROM carro WHERE ID_User = ".$_SESSION['id_user']);
-						$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
-						$query2 = mysqli_query($con, "SELECT * FROM carro WHERE ID_User = ".$_SESSION['id_user'])or die("error");
-						$cont = 0;
-						if ($row['ID'] > 0) {
-							while($row2 = mysqli_fetch_array($query2, MYSQLI_ASSOC)){
-								$cont++;
-								echo "
-									<div class='row'>
-										<div class='col-md-4'>
-											<div class='card mb-4 box-shadow'>
-									    		<img id='srcimg' class='card-img-top' src='php/getImg.php?ID=".$row2['ID_Prod']."' data-holder-rendered='true' style='height:225px; width: 100%; display: block;'>
-											</div>
-										</div>
-										<div class='col-md-6'>
-											<div class='form-group'>
-												<label>Porfavor añada una pregunta o descripción sobre este producto:</label>
-												<input style='display:none' name='prod".$cont."' value='".$row2['ID_Prod']."'>
-												<textarea class='form-control' placeholder='Descripción' required name='text".$cont."'></textarea>
-												<div class='invalid-feedback'>
-													Este campo es requerido.
-												</div>
-											</div>
-											<div class='btn-group'>
-												<label class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modal".$cont."'>Cancelar</label>
-												<!-- Modal -->
-												<div class='modal fade' id='modal".$cont."' tabindex='-1' role='dialog' aria-labelledby='modalLabel".$cont."' aria-hidden='true'>
-												    <div class='modal-dialog' role='document'>
-												        <div class='modal-content'>
-												            <div class='modal-header'>
-												                <h5 class='modal-title' id='modalLabel".$cont."'>Mensaje</h5>
-												                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-												                <span aria-hidden='true'>&times;</span>
-												                </button>
-												            </div>
-												            <div class='modal-body'>
-												                Seguro quieres quitar de la lista?
-												            </div>
-												            <div class='modal-footer'>
-												                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/deleteCar.php?id=".$row2['ID']."';\">Continuar</button>
-												                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-												            </div>
-												        </div>
-												    </div>
-												</div>
-											</div>
 
-										</div>
-
-									</div>
-
-								";
-							}
-						}else{
-							echo "
-								<h3>No ha seleccionado nada para cotizar</h3>
-							";
-						}
-						echo "<input style='display:none' name='cont' value='".$cont."'>";
-					if ($cont > 0) {
-					?>
-						<button class="btn btn-primary" type="submit">Enviar</button>
-					<?php } ?>	
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col"></th>
+								<th scope="col">Producto</th>
+								<th scope="col">Precio</th>
+								<th scope="col">Cantidad</th>
+								<th scope="col">Total</th>
+								<th scope="col"></th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<?php  
+								$query = mysqli_query($con, "SELECT * FROM carro WHERE ID_User = ".$_SESSION['id_user']);
+								$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+								$query2 = mysqli_query($con, "SELECT c.*, p.ID, p.Descripcion, p.url_img, p.precio FROM carro c, productos p WHERE c.ID_Prod = p.ID AND c.ID_User = ".$_SESSION['id_user'])or die("error");
+								$cont = 0;
+								if ($row['ID'] > 0) {
+									while($row2 = mysqli_fetch_array($query2, MYSQLI_ASSOC)){
+										$cont++;
+										$total = $row2['precio'] * $row2['cantidad'];
+										echo "
+											<tr>
+												<th scope='row' style='width: 1px;'>
+													<img src='".$row2['url_img']."' class='' style='width:50px;height:50px;'>
+												</th>
+												<td>
+													".$row2['Descripcion']."
+												</td>
+												<td id=''>
+													$".$row2['precio'].".00
+												</td>
+												<td>
+													<input id='price".$cont."' type='number' value='".$row2['precio']."' style='display:none'>
+													<input id='cantidad".$cont."' type='number' class='form-control cantidad' name='numberX' value='".$row2['cantidad']."' style='width:30%'>
+												</td>
+												<td>
+												<label id='result".$cont."' >$".$total." USD</label> 
+												</td>
+												<td>
+												<button type='button' class='btn btn-sm btn-outline-secondary'> Cancelar</button>
+												</td>
+											</tr>
+										";
+									}
+								}
+							?>						
+						</tbody>
+					</table>
+					<button class='btn btn-primary' type='submit'>Realizar pedido</button>
 				</form>
 			</div>
 			
@@ -121,6 +113,7 @@
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 		-->
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-slim.min.js"><\/script>')</script>
+		<script src="js/jquery-3.4.1.min.js"></script>
 		<script src="js/vendor/popper.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 		<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
@@ -128,7 +121,25 @@
 		<!-- -->
 		<script src="js/grayscale.min.js"></script>
 	    <script src="js/classie.js"></script>
-	    <script src="js/dialogFx.js"></script>
+			<script src="js/dialogFx.js"></script>
+			
+			<script>
+				$(document).ready(function(){
+					$('.cantidad').change(function(ev){
+						var id = ev.currentTarget.id;
+						var cant = ev.currentTarget.value;
+						id = id.substr(-1);
+						var price = document.getElementById('price'+id).value;
+						var res = cant * price;
+						var tmp = $('#result'+id);
+						tmp.html("$"+res+" USD")
+						//console.log(tmp);
+						//document.getElementById('res'+id).innerHtml = res+".00";
+
+					});
+				});
+			</script>
+
 	    <script type="text/javascript">
 	    	$('#myModal').on('shown.bs.modal', function () {
 			  $('#myInput').trigger('focus')

@@ -40,13 +40,15 @@
         <link href="css/productos.css" rel="stylesheet">
         <link href="css/admin.css" rel="stylesheet">
         <link href="css/carousel.css" rel="stylesheet">
-        <link href="css/index.css" rel="stylesheet">
+		<link href="css/index.css" rel="stylesheet">
+		<link href="css/modal-login.css" rel="stylesheet">
         <link href="css/dialog.css" rel="stylesheet">
         <link href="css/dialog-sandra.css" rel="stylesheet">
         <link href="css/ns-default.css" rel="stylesheet">
         <link href="css/ns-style-growl.css" rel="stylesheet">
         <script src="js/modernizr.custom.js"></script>
-
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		
     </head>
     <body>
         <header>
@@ -124,17 +126,15 @@
 	                                echo "
 	                                    <div class='col-md-4'>
 	                                        <div class='card mb-4 box-shadow'>
-	                                            <img class='card-img-top' src='php/getImg.php?ID=".$row['ID']."' data-holder-rendered='true' style='height:".$row['alto']."px; width: 100%; display: block;'>
-	                                            <div class='card-body'>
-	                                                <p class='card-text'>".$row['Descripcion']."</p>
+	                                            <img class='card-img-top' src='".$row['url_img']."' data-holder-rendered='true' style='height:".$row['alto']."px; width: 100%; display: block;'>
+												<div class='card-body'>
+												<h4 class='mb-1' style='text-align:center'>$".$row['precio'].".00 USD</h4>
+												<p class='card-text mb-3'>".$row['Descripcion']."</p>
 	                                                <div class='d-flex justify-content-between align-items-center'>
 	                                                    <div class='btn-group'>
 	                                                        <form action='php/addCar.php' method='POST'>
-	                                                        <button type='submit' class='btn btn-sm btn-outline-secondary'>Cotizar</button>
+	                                                        <button type='submit' class='btn btn-sm btn-outline-secondary'><i class='fas fa-cart-plus'></i> Carro</button>
 	                                                        <input name='id_prod' value='".$row['ID']."' style='visibility:hidden;display:none'>
-	                                                        
-	                                                        <input name='name_img' value='".$row['type_img']."' style='visibility:hidden;display:none'>
-	                                                        
 	                                                        <button type='button' class='btn btn-sm btn-outline-secondary'> ❤ Wish</button>
 	                                                        </form>
 	                                                    </div>

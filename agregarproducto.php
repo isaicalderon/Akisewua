@@ -1,10 +1,15 @@
 <?php 
 	require 'php/isLogin.php';
 	require 'php/conexion.php';
+	$stock = 0;
+	$precio = "";
 	if (($id = @$_GET["id"]) != "") {
 		$edit = true;
 		$value = @$_GET["val"];
 		$alto = @$_GET["alto"];
+		$url_img = @$_GET["img"];
+		$stock = @$_GET["stock"];
+		$precio = @$_GET["price"];
 		
 	}else{
 		$id = 0;
@@ -53,7 +58,7 @@
 							<?php 
 								}else{ 
 		                    	echo "
-		                    	<img id='srcimg' class='card-img-top' src='php/getImg.php?ID=".$id."' data-holder-rendered='true' style='height:".$alto."px; width: 100%; display: block;'>
+		                    	<img id='srcimg' class='card-img-top' src='".$url_img."' data-holder-rendered='true' style='height:".$alto."px; width: 100%; display: block;'>
 		                     		";
 		                     	} 
 		                     ?>
@@ -68,7 +73,7 @@
 						<form class="needs-validation" novalidate method="post" action="php/addProducto.php" enctype="multipart/form-data">
 							<div class="row">
 								<div class="col-md-6 mb-3">
-									<label for="desc">Descripcion</label>
+									<label for="desc">Descripcion del producto</label>
 									<?php if(!$edit){ ?>
 										<textarea name ="desc" type="text" class="form-control" required=""></textarea>
 									<?php }else{ ?>
@@ -81,13 +86,23 @@
 								</div>
 							</div>
 							<div class="mb-3">
-								<label for="foto">Abra una imagen</label>
-								<input name="img" type="file" class="form-control" id="foto" required="" >
+								<label for="foto">Abra una imagen (El nombre de las imagenes no deben repetirse) </label>
+								<input name="img" type="file" class="form-control" id="foto" required="" alt='No image' title='Imagen actual'>
 								<div class="invalid-feedback">
 									Este campo es requerido.
 								</div>
 							</div>
 							<div class="row">
+								<div class="col-md-4 mb-3">
+										<label for="price">Precio (USD)</label>
+										<input id='price' type="text" class='form-control' name='precio' 
+											value='<?php echo $precio; ?>' placeholder='$ USD' required>
+								</div>
+								<div class="col-md-4 mb-3">
+										<label for="stock">Stock</label>
+										<input id='stock' type="text" class='form-control' name='stock' 
+											value='<?php echo $stock;?>' placeholder='Stock' required>
+								</div>
 								<div class="col-md-4 mb-3">
 									<label for="alto">Height</label>
 									<select name="alto" class="custom-select d-block w-100" id="alto" required="">
@@ -115,14 +130,15 @@
 								
 							</div>
 							<input type="texto" name="status" <?php echo "value='".$edit."' "; ?> style="display: none">
-							<input type="texto" name="id" <?php echo "value='".$id."' "; ?> style="display: none">
-							
+							<input type="texto" name="id" <?php echo "value='".$id."' "; ?> style="display: none">			
 							<hr class="mb-4">
+							<a class="btn btn-secondary" onclick="window.location.href='admin.php?prod=1'" style='color:white'>Regresar</a>
+								
 							<?php if(!$edit){ ?>
 								<button class="btn btn-primary" type="submit">Aceptar</button>
 							<?php }else{ ?>
 								<button class="btn btn-primary" type="submit">Hacer cambios</button>
-							
+								
 							<?php } ?>
 							<br><br>
 						</form>
