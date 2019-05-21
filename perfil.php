@@ -183,89 +183,62 @@
 		            <table class="tablaAlum">
 		                <thead>
 		                    <tr>
-		                        <th>Numero</th>
-		                        <th>Descripción</th>
-		                        <th>Fecha creado</th>
-								<th>Estado</th>
+								<th></th>
+								<th>Producto</th>
+								<th>Nombre cliente</th>
+								<th>Cantidad</th>
+								<th>Total</th>
+								<th>Fecha pedido</th>
+								<th>Fecha entrega</th>
 								<th>Opciones</th>
+								
 	                        </tr>
 
 		                </thead>
 		                <tbody>
-		                    <?php
-		                    	
-	                            //$query = sqlsrv_query($con, "SELECT * FROM verAlumnos");
-	                            $query = mysqli_query($con, 
-	                            	"SELECT p.ID, p.Descripcion, p.ID_User, p.Fecha, p.status FROM pedidos p, clientes c WHERE p.ID_User = c.ID AND p.ID_User = ".$_SESSION['id_user']." ORDER BY p.ID DESC");
-	                  	 	   	$estado = "Pendiente";
-	                  	 	    while($row2 = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-									if ($row2['status'] == 1) {
-										$estado = "Negociando";
-									}
-									if ($row2['status'] == 2) {
-										$estado = "Finalizado";
-									}
-									
+							<?php
+								$query = mysqli_query($con, 
+									"SELECT ped.ID, p.Descripcion, p.url_img, c.Nombres, c.Apellidos, ped.cantidad, ped.total, ped.Fecha, ped.fecha_entrega FROM productos p, clientes c, pedidos ped WHERE ped.ID_Prod = p.ID AND c.ID = ped.ID_Cliente");
+								while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
 									echo "
-		                                <tr>
-		                                	<td>".$row2['ID']."</td>
-		                                    <td>".$row2['Descripcion']."</td>
-		                                    <td>".$row2['Fecha']."</td>
-		                                    <td>".$estado."</td>
-		                                    <td>
-		                                    	<div class='btn-group' role='group'>
-		                                    	<button onclick=\"window.location.href = 'cotizacion.php?id=".$row2['ID']."&nusr=".$_SESSION['id_user']."';\" class='btn btn-sm btn-outline-secondary'>Ver</button>
-		                                    	";
-                                	if ($estado == "Negociando") {
-                                		echo "
-		                                    	<button onclick=\"window.location.href = 'mensajes.php?id=".$row2['ID']."&nusr=".$_SESSION['id_user']."';\" class='btn btn-sm btn-outline-secondary'>Mensajes</button>
-                                		";
-                                		$estado = "Pendiente";
-                                	}
-
-                                	if ($estado == "Finalizado") {
-                                		echo "
-		                                    	<a class='btn btn-sm btn-outline-secondary' href='php/deleteCotizacion.php?id=".$row2['ID']."'>Eliminar</a>
-		                                    	</div>
-                                		";
-                                	}else{
-                                		echo "
-		                                    	<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modal".$row2['ID']."'>Cancelar</button>
-		                                    	</div>
-                                		";
-                                		
-                                	}
-
-                                	echo "	
-		                                    	<!-- Modal -->
-												<div class='modal fade' id='modal".$row2['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-												    <div class='modal-dialog' role='document'>
-												        <div class='modal-content'>
-												            <div class='modal-header'>
-												                <h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-												                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-												                <span aria-hidden='true'>&times;</span>
-												                </button>
-												            </div>
-												            <div class='modal-body'>
-												                Seguro deseas cancelar esta cotización?
-												            </div>
-												            <div class='modal-footer'>
-												                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarCotizacion.php?id=".$row2['ID']."';\">Continuar</button>
-												                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-												            </div>
-												        </div>
-												    </div>
+										<tr>
+											<td style='width: 1px;'><img src='".$row['url_img']."' class='' style='width:50px;height:50px;'></td>
+											<td>".$row['Descripcion']."</td>
+											<td>".$row['Nombres']." ".$row['Apellidos']."</td>
+											<td>".$row['cantidad']."</td>
+											<td>".$row['total']."</td>
+											<td>".$row['Fecha']."</td>
+											<td>".$row['fecha_entrega']."</td>
+											<td>
+												<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalProv".$row['ID']."'>Eliminar</button>
+														
+												<!-- Modal -->
+												<div class='modal fade' id='modalProv".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+													<div class='modal-dialog' role='document'>
+														<div class='modal-content'>
+															<div class='modal-header'>
+																<h5 class='modal-title' id='modalLabel'>Mensaje</h5>
+																<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																<span aria-hidden='true'>&times;</span>
+																</button>
+															</div>
+															<div class='modal-body'>
+																Seguro deseas cancelar esta cotización?
+															</div>
+															<div class='modal-footer'>
+																<button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarPedido.php?id=".$row['ID']."';\">Continuar</button>
+																<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
+															</div>
+														</div>
+													</div>
 												</div>
-
-	                                    	</td>
-		                                </tr>
-		                            " ;
-									$estado = "Pendiente";
-	                  	 	    
-                        		}
-		                      	 
-		                    ?>
+											</td>
+										</tr>
+									" ;
+									
+								}
+								
+							?>
 		                </tbody>
 		            </table>
 	            		<!--

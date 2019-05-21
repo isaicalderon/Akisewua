@@ -128,13 +128,14 @@
 				<div class="modal-body">
 						<div class="form-group no-margin-b">
 							<div class="col-sm-12 w-100">
-								<input id="login-name" type="email" class="form-control2 no-br-b br-1" id="inputEmail1" placeholder="Correo electronico" name="email" required>
+								<input type="email" class="form-control2 no-br-b br-1" id="inputEmail1" placeholder="Correo electronico" name="email" required>
 								<span class="fas fa-user form-control-feedback" aria-hidden="true"></span>
 							</div>
 						</div>
 						<div class="form-group">
 							<div class="col-sm-12 w-100">
-								<input id="login-name" type="password" class="form-control2 br-2" id="inputPassword3" placeholder="Contraseña" name="pass" required>
+								<input type="password" class="form-control2 br-2" 
+								id="inputPassword3" onkeypress='keyPressX(event)' placeholder="Contraseña" name="pass" required>
 								<span class="fas fa-unlock-alt form-control-feedback" aria-hidden="true"></span>
 							</div>
 						</div>
@@ -147,15 +148,21 @@
 								</div>
 							";
 						}
-						?>
+					?>
 				</div>
 				<div class="modal-footer">
 					<a class="btn btn-info" href="registrarse.php" style="border-radius:5px;cursor:pointer;">Registrarse</a>
 					<button type="button" class="btn btn-primary" onclick="document.getElementById('formLogin').submit()">Aceptar</button>
 				</div>
-				
 			</form>
 		</div>
 	</div>
 </div>
-
+<script>
+	function keyPressX(event){
+		//var key = ;
+		if (event.keyCode == 13) {
+			document.getElementById('formLogin').submit()
+		}
+	}
+</script>

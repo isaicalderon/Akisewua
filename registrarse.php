@@ -1,6 +1,7 @@
 <?php 
 	require 'php/isLogin.php';
 	require 'php/conexion.php';
+
 	$id = @$_POST["id_user"];
 	if ($id > 0) {
 		$edit = true;
@@ -39,11 +40,14 @@
 		<link href="css/admin.css" rel="stylesheet">
 		<link href="css/carousel.css" rel="stylesheet">
 		<link href="css/index.css" rel="stylesheet">
+		<link href="css/modal-login.css" rel="stylesheet">
 		<link href="css/dialog.css" rel="stylesheet">
-	    <link href="css/dialog-sandra.css" rel="stylesheet">
-	    <link href="css/ns-default.css" rel="stylesheet">
-    	<link href="css/ns-style-growl.css" rel="stylesheet">
-    	<link href="css/form-validation.css" rel="stylesheet">
+		<link href="css/dialog-sandra.css" rel="stylesheet">
+		<link href="css/ns-default.css" rel="stylesheet">
+		<link href="css/ns-style-growl.css" rel="stylesheet">
+		<link href="css/form-validation.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		
     	<style type="text/css">
     		.error{
     			color: red;

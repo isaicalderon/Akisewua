@@ -15,7 +15,7 @@
     @$id_prod = $_POST['id_prod'];
     @$img = $_POST['name_img'];
     if (@$id_prod == null) {
-        header("Location: index.php");
+        //header("Location: index.php");
     }
  ?>
 <!doctype html>
@@ -49,38 +49,19 @@
         </header>
 
         <main role="main">
-            <div class="container-fluid" style="margin-top: 2%">
+            <div class="container" style="margin-top: 2%">
                 <h1>Pedido</h1>
-                <div class="row">
-                    <div class="col-md-4">
-                    <?php 
-                        echo "<img src='php/getImg.php?ID=".$id_prod."' style='width: 100%;height: 400px'>";
-                     ?>
-                    </div>
-                    <div class="col-md-4">
-                        <form action="php/addPedido.php" method="post">
-                            <label>Porfavor añada una descripcion</label>
-                            <textarea name='desc' class="form-control" placeholder="Descripcion" required=""></textarea>
-                            <?php 
-                                echo "
-                                    <input name='id_prod' value='".$id_prod."' style='visibility:hidden;display:none'>
-                                    <input name='id_user' value='".$_SESSION['id_user']."' style='visibility:hidden;display:none'>
-                                ";
-                             ?>
-                            <br>
-                            <button class="btn btn-primary " type="submit">Aceptar</button>
-
-                        </form>
-                    </div>
+                <div class='row'>
+                    
                 </div>
             </div>
             <hr>
-            <!-- FOOTER -->
+            <!-- FOOTER 
             <footer class="container">
                 <p class="float-right"><a href="#">Arriba</a></p>
                 <p>&copy; Developers of Aki sewua, Inc. &middot; <a href="#">Privacidad</a> &middot; <a href="#">Terminos y condiciones</a>
                 &middot; <a href="#">Mapa</a></p>
-            </footer>
+            </footer>-->
         </main>
 
         <!-- Bootstrap core JavaScript
