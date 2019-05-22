@@ -1,6 +1,8 @@
 <?php 
 	require 'php/conexion.php';
 	require 'php/isLogin.php';
+	require 'php/fecha.php';
+
 	if ($_SESSION['root'] != 1) {
 		header("Location: perfil.php");
 	}
@@ -23,7 +25,7 @@
 
 		<script src="js/modernizr.custom.js"></script>
 		<style type="text/css">
-			table, th, td ,tr{
+			/* table, th, td ,tr{
 			    border: .1em solid #000;
 			}
 			.table thead th {
@@ -34,7 +36,14 @@
 			    padding: .75rem;
 			    vertical-align: top;
 			    border-top: .1em solid #000; 
+			} */
+
+			.table th, td {
+				border: none;
+				text-align: left;
+				padding: 8px;
 			}
+
 			@page {
 			   margin: 6% 0px;
 			}
@@ -44,90 +53,98 @@
 	<body>
 
 		<main role='main'>
-			<div class="container">
-				<h1>Reporte de Ventas</h1>
-				<?php 
-					if (@$_GET['data'] != "") {
-						if ($_GET['data'] == 1) { //dia
-							echo "
-								<label><b>Día: </b>".$_GET['value']."</label>
-							";
-						}
-						if ($_GET['data'] == 2) { //mes
-							echo "
-								<label><b>Mensual: </b>".$_GET['value']."</label>
-							";
-						}
-						if ($_GET['data'] == 3) { //año
-							echo "
-								<label><b>Anual: </b>".$_GET['value']."</label>
-							";
-						}
-					}
-				 ?>
-				 <br>
-				<label><b>Ingresos:</b> $<span ><?php echo @$_GET['mon']; ?>.00</span> USD</label>
-			</div>
-			<div class="container" id="muestra">
-				<table class="table table-sm" style="border: .1em solid #000;">
-					<thead style="background: #e5e5e5">
+			<div class="container mt-2">
+				<center>
+					<img src="img/index/logo.jpg" alt="" width="150px" height='150px'>
+				</center>
+				<h1 class='text-center'>AKISEWUA SA DE CV</h1>
+				<h4 class='text-center mb-4'>Reporte de Ventas</h4>
+				<div class="row">
+					<div class="col">
+						<p style='font-size:17px'> <b>Total:</b> $<span id='money'>50</span> USD  </p>
+					</div>
+					<div class="col">
+						<p style='font-size:17px;text-align: right;'> <b>Fecha:</b> 
+							<?php 
+								if(@$_GET['data'] != ""){ 
+									if(@$_GET['data'] == 1){
+										echo castDate(@$_GET['value']);
+									}
+									if(@$_GET['data'] == 2){
+										echo @$_GET['value'];
+									}
+									if(@$_GET['data'] == 3){
+										echo @$_GET['value'];
+									}
+								}else{
+									echo "TODO";
+								} 
+							?> 
+						</p>
+					</div>
+				</div>
+				<table class="table">
+					<thead>
 						<tr>
-							<th>Nombre cliente</th>
-							<th>Concepto venta</th>
-							<th>ID. Producto</th>
-							<th>Ingreso o dep.</th>
+							<th>Pedido</th>
+							<th>Cliente</th>
 							<th>Fecha</th>
+							<th>Estado</th>
+							<th>Total</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody> 
 						<?php 
+
 							$tmp = "";
+							$money = 0;
 							if(@$_GET['date'] != ""){
 								$tmp = $_GET['date'];
 							}
+								
+							$result = mysqli_query($con, "SELECT p.*, c.Nombres, c.Apellidos, p.ID_Cliente FROM pedidos p, clientes c 
+									WHERE p.ID_Cliente = c.ID ".$tmp);
 
-							if (@$_GET['option'] == "2") {
-								$query = "SELECT c.Nombres, c.Apellidos, coti.ID_Prod,pp.Concepto_venta, pp.Monto_inicial, pp.Fecha_final FROM pedidos_proceso pp, cotizaciones coti, clientes c WHERE pp.ID_Coti = coti.ID AND coti.ID_User = c.ID AND pp.status = 0 ORDER BY pp.ID DESC";
-									$result = mysqli_query($con, $query) or die(mysqli_error($con));
-								 	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-								 		echo "
-								 			<tr>
-								 				<td>".$row['Nombres']." ".$row['Apellidos']."</td>
-								 				<td>".$row['Concepto_venta']."</td>
-								 				<td>".$row['ID_Prod']."</td>
-								 				<td>".$row['Monto_inicial'].".00 USD</td>
-								 				<td>".$row['Fecha_final']."</td>
-								 			</tr>
-								 		";
-								 	}
-							}else{
-								$query = "SELECT pp.Concepto_venta, c.Nombres, c.Apellidos, coti.ID_Prod, pp.Monto_total, pp.Fecha_final FROM pedidos_proceso pp, cotizaciones coti, clientes c WHERE pp.ID_Coti = coti.ID AND coti.ID_User = c.ID AND pp.status = 1 ".$tmp;
-								$result = mysqli_query($con, $query) or die(mysqli_error($con));
-							 	while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-							 		echo "
-							 			<tr>
-							 				<td>".$row['Nombres']." ".$row['Apellidos']."</td>
-							 				<td>".$row['Concepto_venta']."</td>
-							 				<td>".$row['ID_Prod']."</td>
-							 				<td>".$row['Monto_total'].".00 USD</td>
-							 				<td>".$row['Fecha_final']."</td>
-							 				
-							 			</tr>
-							 		";
-							 	}
+							while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+								$nombreCompleto = $row['Nombres']." ".$row['Apellidos'];
+								$estado = "";
+								$fecha = castDate($row['fecha']);
+								$money += $row['total'];
+								switch($row['status']){
+									case 0:
+										$estado = "En espera";
+										break;
+									case 1:
+										$estado = "Completado";
+										break;
+								} 
+
+								echo "
+									<tr>
+										<td>#".$row['ID']."</td>
+										<td>".$nombreCompleto."</td>
+										<td>".$fecha."</td>
+										<td>".$estado."</td>
+										<td><b>$".$row['total'].".00</b> de ".$row['cantidad_total']." productos</td>
+									</tr>
+								";
 							}
-						 	
-						 ?>
-					</tbody>
+							echo "
+								<script>
+									document.getElementById('money').innerHTML  = ".$money.";
+								</script>
+							";
+						?>
+					</tbody> 
 				</table>
-				<div>
-					<button onclick="print()">Imprimir</button>
-				</div>
+				<!-- <button onclick="print()">Imprimir</button> -->
+
 			</div>
 		</main>
 		
 	</body>
 	<script type="text/javascript">
+		
 		function imprSelec(muestra){
 			var ficha = document.getElementById(muestra);
 			var ventimp = window.open(' ','popimpr');
@@ -136,6 +153,7 @@
 			ventimp.print();
 			ventimp.close();
 		}
+		print();
 	</script>
 
 </html>

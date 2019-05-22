@@ -94,14 +94,31 @@
 							</div>
 							<div class="row">
 								<div class="col-md-4 mb-3">
-										<label for="price">Precio (USD)</label>
+										<label for="price">Costo (USD)</label>
 										<input id='price' type="text" class='form-control' name='precio' 
 											value='<?php echo $precio; ?>' placeholder='$ USD' required>
 								</div>
 								<div class="col-md-4 mb-3">
 										<label for="stock">Stock</label>
-										<input id='stock' type="text" class='form-control' name='stock' 
+										<input id='stock' type="number" class='form-control' name='stock' 
 											value='<?php echo $stock;?>' placeholder='Stock' required>
+								</div>
+								<div class="col-md-4 mb-3">
+									<label for="alto">Proveedor</label>
+									<select name="proveedor" class="custom-select d-block w-100" id="prov" required="">
+										<?php 
+											$res = mysqli_query($con, "SELECT * FROM proveedores");
+											while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){
+												echo "
+													<option value='".$row['ID']."'>".$row['ID']." - ".$row['Nombre']."</option>
+												";
+											}
+										?>
+										
+									</select>
+									<div class="invalid-feedback">
+										Este campo es requerido.
+									</div>
 								</div>
 								<div class="col-md-4 mb-3">
 									<label for="alto">Height</label>
@@ -113,6 +130,7 @@
 										Este campo es requerido.
 									</div>
 								</div>
+								
 								<div class="col-md-4 mb-3">
 									<label for="alto">Categoria</label>
 									<select name="categorias" class="custom-select d-block w-100" id="alto" required="">

@@ -1,5 +1,6 @@
 <?php 
 	require 'conexion.php';
+	require 'isLogin.php';
 	require 'fecha.php';
 
 	$cont 		= $_POST['cont'];
@@ -10,31 +11,104 @@
 	$pago 		= $_POST['pago'];
 
 	// //$numberX = $_POST['numberX'];
-	// $cantidadArray = "";
-	// $idArray = "";
+	$cantidadArray = "";
+	$idArray = "";
+	$subTotalArray = "";
+	//$numberArrat = "";
+
+	for ($i = 0; $i < $cont; $i++) { 
+		$tmp = $_POST['number'.($i+1)];
+		//echo "cantidad: ".$tmp."<br> ";
+		$cantidadArray .= $tmp.",";
+
+		$tmp = $_POST['ID'.($i+1)];
+		//echo "ID: ".$tmp."<br> ";
+		$idArray .= $tmp.",";
+
+		$tmp = $_POST['totalX'.($i+1)];
+		//echo "totalX: ".$tmp."<br> ";
+		$subTotalArray .= $tmp.",";
+
+
+	}
+
+	//echo $subTotalArray;
+	$hoy = date("Y-m-d"); 
+
+	$query = "INSERT INTO `pedidos`(`ID_Prod`, `ID_Cliente`, `cantidad_total`, `cantidad`, `subtotal`, `total`, `fecha`, `envio`, `pago`, `status`)
+						VALUES (
+							'$idArray',
+							".$_SESSION['id_user'].",
+							'$cont',
+							'$cantidadArray',
+							'$subTotalArray',
+							'$total',
+							'$hoy',
+							'$envio',
+							'$pago',
+							0
+						)";
+
+	mysqli_query($con, $query);
+	$last_id = mysqli_insert_id($con);
+
+	$idArray = explode(",",$idArray);
+	$cantidadArray = explode(",",$cantidadArray);
+
+	// cambiando estado del stock
+	for($i = 0; $i < $cont; $i++){
+
+		$query = "SELECT * FROM productos WHERE ID = ".$idArray[$i];
+		$res = mysqli_query($con, $query);
+		$row = mysqli_fetch_array($res, MYSQLI_ASSOC);
+
+		$salidas = $cantidadArray[$i];
+
+		$stockAfter = $row['stock']; // stock antes de la resta
+
+		$stockBefore = $stockAfter - $salidas; // stock despues de la resta
+
+		$promedio = $row['saldo'] / $stockAfter; // calculamos el costo promedio
+
+		$haber = $promedio * $salidas; // calculamos el haber
+
+		$saldo = $row['saldo'] - $haber;
+
+		//$newPromedio = $saldo / $stockBefore;
+
+		mysqli_query($con, "UPDATE productos SET 
+								salidas = '$salidas',
+								stock = '$stockBefore',
+								haber = '$haber',
+								saldo = '$saldo',
+								costo_promedio = '$promedio'
+			 WHERE ID = ".$idArray[$i]);
+		
+		// //echo $row['stock']. " ";
+		// $stock = $row['stock'];
+		
+		// $tmp = $stock - $cantidadArray[$i];
+
+	}
+
+
 	
-	// for ($i = 0; $i < $cont; $i++) { 
-	// 	$tmp = $_POST['number'.($i+1)];
-	// 	//echo "cantidad: ".$tmp."<br> ";
-	// 	$cantidadArray .= $tmp.",";
+	// eliminando del carro
+	mysqli_query($con, "DELETE FROM carro WHERE ID_User = ".$_SESSION['id_user']);
 
-	// 	$tmp = $_POST['ID'.($i+1)];
-	// 	//echo "ID: ".$tmp."<br> ";
-	// 	$idArray .= $tmp.",";
-	// }
+	$var = "Pedido realizado con exito";
+	echo "
+    	<form id='form' action='../verpedido.php' method='post'>
+			<input style='visibility: hidden;display: block;' type='text' name='mensaje' value='".$var."'>
+			<input style='visibility: hidden;display: block;' type='text' name='id' value='".$last_id ."'>
+    	</form>
+    	<script>
+    		document.forms['form'].submit();
+    	</script>
+	";
+	
+		
 
-	// $query = "INSERT INTO `pedidos`(`ID_Prod`, `ID_Cliente`, `cantidad`, `total`, `fecha`, `envio`, `pago`, `status`)
-	//  VALUES (
-	// 	 '$idArray',
-	// 	 ".$_SESSION['id_user'].",
-	// 	 '$cont',
-	// 	 [value-4],
-	// 	 [value-5],
-	// 	 [value-6],
-	// 	 [value-7],
-	// 	 [value-8],
-	// 	 [value-9]) 
-	// ";
 	//echo $idArray	 ;
 	// echo "cont:".$cont." <br>";
 	// echo "subt:".$subt." <br>";
@@ -69,15 +143,7 @@
 	// 	VALUES ('$lastId','$id_pedido','1') ")or die(mysqli_error($con));
 	// }
 	
-	// $var = "Pedido realizado con exito";
-	// echo "
-    // 	<form id='form' action='../perfil.php' method='post'>
-    // 		<input style='visibility: hidden;display: block;' type='text' name='mensaje' value='".$var."'>
-    // 	</form>
-    // 	<script>
-    // 		document.forms['form'].submit();
-    // 	</script>
-	// ";
-	
 	
  ?>
+
+ 

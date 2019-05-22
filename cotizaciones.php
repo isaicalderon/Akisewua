@@ -2,8 +2,14 @@
 	require 'php/isLogin.php';
 	require 'php/conexion.php';
 
-	
- ?>
+	$error1 = false;
+
+	if(@$_GET['err1'] != ""){
+		$error1 = true;
+
+	}
+
+?>
 <!doctype html>
 <html lang="en">
 	<head>
@@ -44,7 +50,6 @@
 		<main role="main">
 			<div class="container" style="margin-top: 2%">
 				<form class='needs-validation' novalidate method="post" action='php/addPedido.php'>
-
 					<table class="table">
 						<thead>
 							<tr>
@@ -61,13 +66,13 @@
 							<?php  
 								$query = mysqli_query($con, "SELECT * FROM carro WHERE ID_User = ".$_SESSION['id_user']);
 								$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
-								$query2 = mysqli_query($con, "SELECT c.*, p.ID, p.Descripcion, p.url_img, p.precio FROM carro c, productos p WHERE c.ID_Prod = p.ID AND c.ID_User = ".$_SESSION['id_user'])or die("error");
+								$query2 = mysqli_query($con, "SELECT c.*, p.Descripcion, p.url_img, p.costo_promedio, p.stock FROM carro c, productos p WHERE c.ID_Prod = p.ID AND c.ID_User = ".$_SESSION['id_user'])or die("error");
 								$cont = 0;
 								$subTotal = 0;
 								if ($row['ID'] > 0) {
 									while($row2 = mysqli_fetch_array($query2, MYSQLI_ASSOC)){
 										$cont++;
-										$total = $row2['precio'] * $row2['cantidad'];
+										$total = $row['costo_promedio'] * $row2['cantidad'];
 										$subTotal += $total;
 										echo "
 											<tr>
@@ -78,28 +83,31 @@
 													".$row2['Descripcion']."
 												</td>
 												<td id=''>
-													$".$row2['precio'].".00
+													$".substr($row['costo_promedio'], 0, 5).".00
 												</td>
 												<td>
-													<input id='price".$cont."' type='number' value='".$row2['precio']."' style='display:none'>
-													<input id='cantidad".$cont."' type='number' class='form-control cantidad' name='number".$cont."' value='".$row2['cantidad']."' style='width:50%'>
+													<input id='price".$cont."' type='number' value='".substr($row['costo_promedio'], 0, 5)."' style='display:none'>
+													<input id='cantidad".$cont."' type='number' 
+														class='form-control cantidad' name='number".$cont."' value='".$row2['cantidad']."' style='width:50%' min='1' max='".$row2['stock']."'>
 												</td>
 												<td>
-													<input id='totalX".$cont."' type='hidden' value='".$total."' style='display:none'>
+													<input id='totalX".$cont."' type='hidden' value='".$total."' name='totalX".$cont."' style='display:none'>
 													<label id='result".$cont."' >$".$total." USD</label> 
 												</td>
 												<td>
-													<input type='hidden' value='".$row2['ID']."' name='ID".$cont."' style='display:none'>
+													<input type='hidden' value='".$row2['ID_Prod']."' name='ID".$cont."' style='display:none'>
 													<a role='button' href='php/deleteCar.php?id=".$row2['ID']."'  class='btn btn-sm btn-outline-secondary'> Cancelar</a>
 												</td>
 											</tr>
 										";
 									}
+								}else{
+									echo "<h1>Lista vacía</h1>";
 								}
 							?>						
 						</tbody>
 					</table>
-
+					<?php if ($row['ID'] > 0) { ?>
 					<div class="row mb-3">
 						<form action="php/addPedido.php" method="post">
 							<div class='col-md-4'>
@@ -129,13 +137,13 @@
 												</label>
 											</div>
 											<div class="form-check" onclick='changeRadio(1, 4)'>
-												<input class="form-check-input" type="radio" name="opciones" id="radio2" value="1" required>
+												<input class="form-check-input" type="radio" name="opciones" id="radio2" value="2" required>
 												<label class="form-check-label" for="radio2">
 													Envío Estándar 3 a 6 Días: <b>$4 USD</b>
 												</label>
 											</div>
 											<div class="form-check" onclick='changeRadio(2, 11)'>
-												<input class="form-check-input" type="radio" name="opciones" id="radio3" value="1" required>
+												<input class="form-check-input" type="radio" name="opciones" id="radio3" value="3" required>
 												<label class="form-check-label" for="radio3">
 													Envío Urgente 1 a 2 Días: <b>$11 USD</b>
 												</label>
@@ -185,25 +193,22 @@
 							</div>
 						</form>		
 					</div>
+					<!-- <div class="alert alert-danger" role="alert">
+						<i class="fas fa-exclamation-circle"></i> Error
+					</div> -->
 					<div class="alert alert-warning" role="alert">
-
-						<div class="panel1">
-							<i class="fas fa-exclamation-circle"></i> 
-						</div>
-						<div class="panel2">
-							<ul>
-								<li>
-									Al realizar su pedido, usted acepta nuestras <a href="#">Políticas de Privacidad</a> y <a href="#">Garantias</a>
-								</li>
-								<li>
-									Tratándose de los pedidos realizados en el plazo máximo de 5 días posteriores 
-									a la fecha de su elaboración, sin haber realizado un anticipo o el pago total, 
-									serán automáticamente eliminados por el sistema.
-								</li>
-							</ul>
-						</div>
+						<ul>
+							<li>
+								Al realizar su pedido, usted acepta nuestras <a href="#">Políticas de Privacidad</a> y <a href="#">Garantias</a>
+							</li>
+							<li>
+								Tratándose de los pedidos realizados en el plazo máximo de 5 días posteriores 
+								a la fecha de su elaboración, sin haber realizado un anticipo o el pago total, 
+								serán automáticamente eliminados por el sistema.
+							</li>
+						</ul>
 					</div>
-					
+					<?php } ?>
 				</form>
 			</div>
 			

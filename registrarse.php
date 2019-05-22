@@ -74,12 +74,12 @@
 							<?php 
 								if ($edit) {
 									echo "
-										<form class='needs-validation' novalidate method='post' action='php/editUser.php' >
+										<form class='needs-validation mb-3' novalidate method='post' action='php/editUser.php' >
 											<input style='display:none' value='".$id."' name='id_user'>
 									";
 								}else{
 									echo "
-										<form class='needs-validation' novalidate method='post' action='php/registrarUsuario.php' >
+										<form class='needs-validation mb-3' novalidate method='post' action='php/registrarUsuario.php' >
 									";
 								}
 							?>
@@ -173,10 +173,13 @@
 						</div>
 						
 						<hr class="mb-4">
-						<button id='boton' class="btn btn-primary btn-block" type="submit"><?php if($edit){echo "Aceptar";}else{ echo "Registrarse";} ?></button>
-						<label><span class="text-muted">Dando clic en registrarse usted acepta nuestros Términos y Condiciones.</span></label>
-						<br><br>
+						<a class="btn btn-warning" href="javascript:history.back()">Regresar</a>
+						<button id='boton' class="btn btn-primary" type="submit"><?php if($edit){echo "Aceptar";}else{ echo "Registrarse";} ?></button>
+						
 					</form>
+					<div class="alert alert-warning" role="alert">
+					<i class="fas fa-exclamation-circle"></i>  Dando clic en registrarse usted acepta nuestros Términos y Condiciones.
+					</div>
 				</div>
 
 			</div>

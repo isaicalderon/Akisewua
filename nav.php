@@ -1,13 +1,14 @@
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-slim.min.js"><\/script>')</script>
-		<script src="js/vendor/popper.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
-		<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-		<script src="js/vendor/holder.min.js"></script>
-		<!-- -->
-		<script src="js/grayscale.min.js"></script>
-	    <script src="js/classie.js"></script>
-	    <script src="js/dialogFx.js"></script>
-	    
+<script src="js/vendor/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script src="js/vendor/holder.min.js"></script>
+<!-- -->
+<script src="js/grayscale.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/dialogFx.js"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+		
 <?php 
 
 	if(@$_POST['mensaje']!=""){

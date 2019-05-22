@@ -6,8 +6,8 @@
 	if ($opcion == 1) {
 		//$date = new DateTime($fecha);
 		//$fecha = $date->format('d/m/Y');
-		$q = "AND Fecha_final = '$fecha' ";
-		header("Location: ../admin.php?rep=1&data=".$opcion."&value=".$fecha."&date=".$q);
+		$q = "AND fecha = '$fecha' ";
+		header("Location: ../admin.php?pedidos=1&data=".$opcion."&value=".$fecha."&date=".$q);
 	}
 	
 	if ($opcion == 2) {
@@ -15,19 +15,19 @@
 	 	$fecha2 = $date->format('Y-m-d');
 		$tmp = lastDay($fecha2);
 	 	$fechaf = $fecha."-".$tmp;
-		$q = "AND Fecha_final BETWEEN '$fecha2' AND '$fechaf' ";
+		$q = "AND fecha BETWEEN '$fecha2' AND '$fechaf' ";
 		$tmp = getMes($fecha);
-		header("Location: ../admin.php?rep=1&data=".$opcion."&value=".$tmp."&date=".$q);
+		header("Location: ../admin.php?pedidos=1&data=".$opcion."&value=".$tmp."&date=".$q);
 	}
 
 	if ($opcion == 3) {
 		$fechatmp1 = $fecha."-01-01";
 		$fechatmp2 = $fecha."-12-31";
-		$q = "AND Fecha_final BETWEEN '$fechatmp1' AND '$fechatmp2' ";
-		header("Location: ../admin.php?rep=1&data=".$opcion."&value=".$fecha."&date=".$q);
+		$q = "AND fecha BETWEEN '$fechatmp1' AND '$fechatmp2' ";
+		header("Location: ../admin.php?pedidos=1&data=".$opcion."&value=".$fecha."&date=".$q);
 	}
 	if ($opcion == 4) {
-		header("Location: ../admin.php?rep=1");
+		header("Location: ../admin.php?pedidos=1");
 	
 	}
 

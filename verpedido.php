@@ -1,15 +1,64 @@
 <?php 
 	require 'php/conexion.php';
 	require 'php/isLogin.php';
+	require 'php/fecha.php';
+	$redirect = "perfil.php";
+	$root = false;
+	if($_SESSION['root'] == 1){
+		$root = true;
+		$redirect = 'admin.php?pedidos=1';
+	}
 
-	if (@$_GET['id'] != "") {
-		$id_pedido = @$_GET['id'];
-		$query = mysqli_query($con, "SELECT pp.ID,coti.ID_Prod,c.Nombres, c.Apellidos, pp.Descripcion, pp.Monto_inicial, pp.Monto_total,pp.Fecha_inicio, pp.Fecha_final, pp.Concepto_venta FROM pedidos_proceso pp, cotizaciones coti, clientes c, productos p WHERE pp.ID_Coti = coti.ID AND coti.ID_Prod = p.ID AND coti.ID_User = c.ID AND pp.ID = ".$id_pedido);
+	if (@$_GET['id'] != "" || @$_POST['id'] != "") {
+		if (@$_GET['id'] != ""){
+			$id_pedido = @$_GET['id'];
+		}
+		if (@$_POST['id'] != ""){
+			$id_pedido = @$_POST['id'];
+		}
+		$query = mysqli_query($con, "SELECT * FROM pedidos WHERE ID = ".$id_pedido);
 		$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+
+		$fecha = castDate($row['fecha']);
+		$estado = "";
+		$envio = "";
+		$pago = "";
+
+		if($row['status'] == 0){
+			$estado = "En espera";
+		}
+		if($row['status'] == 1){
+			$estado = "Completado";
+		}
+		if($row['status'] == 2){
+			$estado = "Cancelado";
+		}
+
+		if($row['envio'] == 1){
+			$envio = "Recojer en tienda";
+		}
+		if($row['envio'] == 2){
+			$envio = "Envío Estándar 3 a 6 Días: <b>$4 USD</b>";
+		}
+		if($row['envio'] == 3){
+			$envio = "Envío Urgente 1 a 2 Días: <b>$11 USD</b>";
+		}
+
+		if($row['pago'] == 1){
+			$pago = "Deposito o transeferencia bancaria";
+		}
+		if($row['pago'] == 2){
+			$pago = "PayPal (Tarjeta de Credito/Debito)";
+		}
+		if($row['pago'] == 3){
+			$pago = "Pago en tienda (Cd. Obregon)";
+		}
+
+
 	}else{
 		header("Location: admin.php");
 	}
- ?>
+ ?> 	
 <!doctype html>
 <html lang="en">
 	<head>
@@ -28,13 +77,26 @@
 		<link href="css/carousel.css" rel="stylesheet">
 		<link href="css/index.css" rel="stylesheet">
 		<link href="css/dialog.css" rel="stylesheet">
-	    <link href="css/dialog-sandra.css" rel="stylesheet">
-	    <link href="css/ns-default.css" rel="stylesheet">
-    	<link href="css/ns-style-growl.css" rel="stylesheet">
-    	<link href="css/form-validation.css" rel="stylesheet">
-    	
+		<link href="css/dialog-sandra.css" rel="stylesheet">
+		<link href="css/ns-default.css" rel="stylesheet">
+		<link href="css/ns-style-growl.css" rel="stylesheet">
+		<link href="css/form-validation.css" rel="stylesheet">
+		
 		<script src="js/modernizr.custom.js"></script>
-	    
+		<style>
+			mark {
+					background-color: #f9f2f4;
+					border-radius: 4px;
+					color: #c7254e;
+					font-size: 90%;
+					padding: 2px 4px;
+			}
+			.tablaAlum th, td {
+				border: none;
+				text-align: left;
+				padding: 8px;
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -43,77 +105,99 @@
 
 		<main role="main">
 			<div class="container" style="margin-top: 2%">
-				<form>
-					<div class="row">
-						<div class="col-md-4">
-							<div class="card">
-								<?php 
-								echo "
-									<img src='php/getImg.php?ID=".$row['ID_Prod']."' style='width: 100%;height: 300px'>
-								";
-								 ?>
-							</div>
-						</div>
-						<div class="col-md-8">
-							<div class="row">
-								<div class="col-md-10 ">
-									<h4>Pedido por: <?php echo $row['Nombres']." ".$row['Apellidos']; ?></h4>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Descripción:</b> <?php echo $row['Descripcion']; ?></label>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Conceto venta:</b> <?php echo $row['Concepto_venta']; ?></label>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Monto incial:</b> $<?php echo $row['Monto_inicial']; ?> USD</label>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Costo total:</b> $<?php echo $row['Monto_total']; ?> USD</label>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Fecha inciado:</b> <?php echo $row['Fecha_inicio']; ?></label>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-10 mb-3">
-									<label><b>Fecha entrega:</b> <?php echo $row['Fecha_final']; ?></label>
-								</div>
-							</div>
-							<div class="row">
-								<?php 
-									if ($_SESSION['root'] == 1) {
-								?>
-								<div class="col-md-10 mb-3">
-									<a class="btn btn-primary" href="admin.php?pedidos=1">Regresar</a>
-									<a class="btn btn-primary" <?php echo "href='php/finalizarPedido.php?id=".$id_pedido."'"; ?>>Finalizar pedido</a>
-								</div>
-								
-								<?php }else{ ?>
-								<div class="col-md-10 mb-3">
-									<a class="btn btn-primary" href="javascript:history.back()">Regresar</a>
-								</div>
-								<?php } ?>
-							</div>
-							
-							
-						</div>
-					</div>
+				<h3 class='mb-3'>Pedido #<?php echo $id_pedido; ?> </h3>
+				<p class='mb-4' style='font-size:16px;'>
+					El pedido #<mark><?php echo $id_pedido; ?></mark> 
+					se realizó el <mark><?php echo $fecha; ?></mark> y se encuentra como <mark><?php echo $estado; ?></mark>.
+				</p>
+				<h3 class='mb-3'>Detalles del pedido</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col" style='width:70%'>Producto</th>
+							<th scope="col">Total</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<?php
+							$cont = $row['cantidad_total'];
+							$arrayId = explode(",", $row['id_prod']);
+							$arrayCantidad = explode(",", $row['cantidad']);
+							$arraySubtotal = explode(",", $row['subtotal']);
+							$subtotal = 0; 
+							$tTotal = $row['total'];
+							for($i = 0; $i < $cont; $i++) {
+								//echo $value;
+								$res = mysqli_query($con, "SELECT * FROM `productos` WHERE ID = ".$arrayId[$i]);
+								$subtotal += $arraySubtotal[$i];
+								while($row2 = mysqli_fetch_array($res, MYSQLI_ASSOC)){
+									echo "
+										<tr>
+											<td> 	<img src='".$row2['url_img']."' class='' style='width:50px;height:50px;'> ".$row2['Descripcion']." <span>×  ".$arrayCantidad[$i]."</span></td>
+											<td><b>$".substr($arraySubtotal[$i],0,4)." USD</b></td>
+										</tr>
+									";
+								}
+							}
+						?> 
+					</tbody>
+					<tfoot>
+						<tr>
+							<th scope="col">Subtotal</th>
+							<td> <b>$<?php echo substr($subtotal,0,4);?> USD</b></td>
+						</tr>
+						<tr>
+							<th scope="col">Envio</th>
+							<td> <?php echo $envio;?></td>
+						</tr>
+						<tr>
+							<th scope="col">Pago</th>
+							<td> <?php echo $pago;?></td>
+
+						</tr>
+						<tr>
+							<th scope="col">Total</th>
+							<td> <b>$<?php echo $tTotal;?> USD</b></td>
+						</tr>
+					</tfoot>
+				</table>
+				<?php if($row['pago'] == 1){ ?>
+				<div class="alert alert-info" role="alert">
+					Realice su pago por medio de depósito bancario o transeferencia interbancaria en cualquiera de los 
+					siguentes bancos.
+				</div>
+				<div class="alert alert-warning" role="alert">
+					Por favor envié su comprobante de pago a ventas@akisewua.com, su pedido será enviado el mismo día si confirma antes de 12 PM.
+				</div>
+				<div class="alert alert-light" role="alert">
+						<h4 class='mb-3 mt-2 text-center'>Datos bancarios</h4>
+						<h5>Bancomer:</h5>
+						<p>Banco: <b>Maria Guadalupe</b>  <br>
+						Numero de cuenta: <b>6547893210</b> <br>
+						CLABE: <b>00132465789654321</b> </p>
+						
+						<h5>Banamex:</h5>
+						<p>Banco: <b>Maria Guadalupe</b>  <br>
+						Numero de cuenta: <b>4569871266</b> <br>
+						CLABE: <b>00132415587763321</b> </p>
+				</div>
+				<?php } ?>
+				<a class="btn btn-warning" href="<?php echo $redirect;?>">Regresar</a>
+
+				<?php
 				
-				</form>
+					if($root){
+							echo "
+								<a class='btn btn-success' href='php/aceptarPedido.php?id=".$id_pedido."&id_user=".$row['id_cliente']."'>Aceptar pedido</a>
+							";
+					}	
+
+				?>
+
 			</div>
 			
-			<!-- FOOTER
+			<!-- FOOTER <a class="btn btn-primary" href="javascript:history.back()">Regresar</a>
 			<footer class="container">
 				<p class="float-right"><a href="#">Arriba</a></p>
 				<p>&copy; Aki sewua, Inc. Developers 2018 &middot; <a href="#">Privacidad</a> &middot; <a href="#">Términos y condiciones</a>

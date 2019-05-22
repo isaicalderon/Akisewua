@@ -2,10 +2,12 @@
 	require 'php/conexion.php';
 	require 'php/isLogin.php'; 
 
+	$disabled = "";
 	if(isset($_POST['search'])){ // este es isset para el button
 		$valueToSearch = $_POST['search-text']; // valor del input buscar
 		$categoria = $_POST['radioButton'];
 		$tmp = "";
+		
 		if ($categoria > 0) {
 			//echo "<script>alert('Entre categoria: ".$categoria."')</script>";
 			$tmp = "AND Categoria = ".$categoria;
@@ -128,12 +130,28 @@
 	                                        <div class='card mb-4 box-shadow'>
 	                                            <img class='card-img-top' src='".$row['url_img']."' data-holder-rendered='true' style='height:".$row['alto']."px; width: 100%; display: block;'>
 												<div class='card-body'>
-												<h4 class='mb-1' style='text-align:center'>$".$row['precio'].".00 USD</h4>
-												<p class='card-text mb-3'>".$row['Descripcion']."</p>
+												<h4 class='mb-1' style='text-align:center'>$".substr($row['costo_promedio'], 0, 5)." USD</h4>
+												<p class='card-text mb-3'>".$row['Descripcion']."</p> ";
+									if ($row['stock'] == 0){
+										$disabled = "disabled";
+										echo "
+												<div class='alert alert-warning text-center' role='alert'>
+													Agotado!
+												</div>
+										";
+									}else{
+										$disabled = "";
+										echo "
+											<div class='alert alert-success text-center' role='alert'>
+												En Existencia!
+											</div>
+										";
+									}
+									echo "
 	                                                <div class='d-flex justify-content-between align-items-center'>
 	                                                    <div class='btn-group'>
 	                                                        <form action='php/addCar.php' method='POST'>
-	                                                        <button type='submit' class='btn btn-sm btn-outline-secondary'><i class='fas fa-cart-plus'></i> Carro</button>
+	                                                        <button ".$disabled." type='submit' class='btn btn-sm btn-outline-secondary'><i class='fas fa-cart-plus'></i> Carro</button>
 	                                                        <input name='id_prod' value='".$row['ID']."' style='visibility:hidden;display:none'>
 	                                                        <button type='button' class='btn btn-sm btn-outline-secondary'> ❤ Wish</button>
 	                                                        </form>

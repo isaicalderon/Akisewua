@@ -1,4 +1,8 @@
-<?php require 'php/isLogin.php';
+<?php 
+	require 'php/conexion.php';
+	require 'php/isLogin.php';
+	require 'php/fecha.php'; 
+
 	if ($status) {
 		if($_SESSION['root'] != 1 ){
 			header("Location: index.php");
@@ -36,7 +40,13 @@
 	    <link href="css/ns-default.css" rel="stylesheet">
     	<link href="css/ns-style-growl.css" rel="stylesheet">
 		<script src="js/modernizr.custom.js"></script>
-	    
+		<style>
+			.table th, td {
+				border: none;
+				text-align: left;
+				padding: 8px;
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -68,9 +78,9 @@
 					<hr class="mb-4">
 			        <!-- Clientes LISTO -->
 	        		<div class="row abs" id="11">
-						<div class="col-md-10">
+						<div class="col-md-12">
 							<h4>Clientes nuevos (top 5)</h4>
-							<table class="tablaAlum">
+							<table class="table">
 							    <thead>
 							        <tr>
 							            <th>Nombres</th>
@@ -142,99 +152,178 @@
 					</div>
 			        <!-- Productos LISTO -->
 	        		<div class="row abs block" id="15">
-	        			<div class="col-md-10">
-	        				<h4>Productos</h4>
-		        			<table class="tablaAlum">
-		        				<thead>
-		        					<tr>
-		        						<th>ID</th>
-		        						<th>Descripción</th>
-		        						<th>Precio</th>
-		        						<th>Stock</th>
-		        						<th>Imagen</th>
-		        						<th>Altura</th>
-		        						<th>Categoria</th>
-	        							<th>Fecha Agregada</th>
-	        							<th>Opciones</th>
-	        							
-	        						</tr>
-		        				</thead>
-		        				<tbody>
-		        					<?php 
-		        						$query = mysqli_query($con, "SELECT * FROM productos");
-		        						while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
-		        							echo "
-		        								<tr>
-		        									<td>".$row['ID']."</td>
-													<td>".$row['Descripcion']."</td>
-													<td>$".$row['precio'].".00</td>
-													<td>".$row['stock']."</td>
-													<td>
-														<button class='btn btn-link' data-toggle='modal' data-target='#modal".$row['ID']."'>
-															<img src='".$row['url_img']."' style='width:25px;height:25px;' class='img-thumbnail'> ".$row['url_img']."
-														</button>
-														<!-- Modal -->
-														<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-															<div class='modal-dialog' role='document'>
-																<div class='modal-content'>
-																	<div class='modal-header'>
-																		<label>".$row['Descripcion']."</label>
-																		<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-																		<span aria-hidden='true'>&times;</span>
-																		</button>
-																	</div>
-																	<div class='modal-body'>
-																		<img src='".$row['url_img']."' class='img-fluid' style='width:100%;height:auto;'>
+	        			<div class="col-md-12">
+	        				<h4>Productos <a class='btn btn-primary' href='agregarproducto.php'  role='button'><i class="fas fa-plus"></i> Agregar producto</a> </h4>
+		        			<div class='table-responsive'>
+								<table class="table">
+									<thead>
+										<tr>
+											<th>Descripción</th>
+											<th>P. Unitario</th>
+											<th>Entradas</th>
+											<th>Existencias</th>
+											<th>C. Promedio</th>
+											<th>Imagen</th>
+											<th>Altura</th>
+											<th>Categoria</th>
+											<th>Cod prov</th>
+											<th>Fecha Agregada</th>
+											<th>Acciones</th>	
+										</tr>
+									</thead>
+									<tbody>
+										<?php 
+											$query = mysqli_query($con, "SELECT * FROM productos");
+											$clase = "";
+											$cont = 0;
+											while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+												$cont++;
+												if ($row['stock'] == 0){
+													$clase = "table-danger";
+												}else if($row['stock'] < 3){
+													$clase = "";
+												}else{
+													$clase = "";
+												}
+												echo "
+													<tr class='".$clase."' >
+														<td data-toggle='tooltip' data-placement='top' title='Descripcion del producto.'>".$row['Descripcion']."</td>
+														<td data-toggle='tooltip' data-placement='top' title='Precio Unitario.'>
+															<div class='input-group mb-2 mr-sm-2'>
+																<div class='input-group-prepend'>
+																	<div class='input-group-text'>$</div>
+																</div>
+																<input type='number' value='".$row['precio']."' id='PU".$row['ID']."'
+																  class='form-control' placeholder='USD' onkeypress='keyPressPU(event)'>
+																<div class='input-group-prepend'>
+																	<div class='input-group-text'>.00</div>
+																</div>
+															</div>
+														</td>
+														<td>
+															<input type='number' 
+																class='form-control cantidad' value='0' id='entradas".$row['ID']."'
+																style='width:100%' min='0' max='100' onkeypress='keyPressX(event)' data-toggle='tooltip' data-placement='top' 
+																title='Estas son las entradas del producto (compras).'>
+														</td>
+														<td>
+															<input type='number' id='idX".$row['ID']."'
+																class='form-control cantidad' name='number".$cont."' value='".$row['stock']."' 
+																style='width:100%' min='0' max='100' data-toggle='tooltip' data-placement='top' 
+																title='Ingrese un nuevo numero y presione enter para cambiar el valor del stock.'>
+														</td>
+														<td>
+															$".substr($row['costo_promedio'], 0, 5)." USD
+														</td>
+														<td data-toggle='tooltip' data-placement='top' 
+														title='Imagen del producto. Presione en el url para ver la imagen.'>
+															<button class='btn btn-link' data-toggle='modal' data-target='#modal".$row['ID']."'>
+																<img src='".$row['url_img']."' style='width:25px;height:25px;' class='img-thumbnail'> ".$row['url_img']."
+															</button>
+															<!-- Modal -->
+															<div class='modal fade' id='modal".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+																<div class='modal-dialog' role='document'>
+																	<div class='modal-content'>
+																		<div class='modal-header'>
+																			<label>".$row['Descripcion']."</label>
+																			<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																			<span aria-hidden='true'>&times;</span>
+																			</button>
+																		</div>
+																		<div class='modal-body'>
+																			<img src='".$row['url_img']."' class='img-fluid' style='width:100%;height:auto;'>
+																		</div>
 																	</div>
 																</div>
 															</div>
-														</div>
-		        									</td>
-		        									<td>".$row['alto']."</td>
-		        									<td>".$row['Categoria']."</td>
-		        									<td>".$row['Fecha_insert']."</td>
-	        										<td>
-	        											<div class='btn-group'>
-		        											<button onclick=\"window.location.href = 'agregarproducto.php?id=".$row['ID']."&img=".$row['url_img']."&price=".$row['precio']."&stock=".$row['stock']."&val=".$row['Descripcion']."&alto=".$row['alto']."';\" class='btn btn-sm btn-outline-secondary'>Editar</button>
-								                		
-								                			<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalDel".$row['ID']."'>Eliminar</button>
-							                				<!-- Modal -->
-															<div class='modal fade' id='modalDel".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-															    <div class='modal-dialog' role='document'>
-															        <div class='modal-content'>
-															            <div class='modal-header'>
-															                <h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-															                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-															                <span aria-hidden='true'>&times;</span>
-															                </button>
-															            </div>
-															            <div class='modal-body'>
-															                Seguro deseas borrar este producto?
-															            </div>
-															            <div class='modal-footer'>
-															                <button type='button' class='btn btn-primary' onclick=\"window.location.href='php/deleteProd.php?id=".$row['ID']."';\">Continuar</button>
-															                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-															            </div>
-															        </div>
-															    </div>
-															</div>
+														</td>
+														<td data-toggle='tooltip' data-placement='top' 
+														title='Altura de la imagen en pixeles '>".$row['alto']."</td>
+														<td data-toggle='tooltip' data-placement='top' 
+														title='Categoria a la que pertenece el producto'>".$row['Categoria']."</td>													
+														<td data-toggle='tooltip' data-placement='top' 
+														title='Codigo del proveedor'>".$row['cod_prov']."</td>
+														<td data-toggle='tooltip' data-placement='top' 
+														title='Fecha en la que se ingreso por primera vez en el sistema.'>".$row['Fecha_insert']."</td>
+														<td>
+															<div class='btn-group'>
+																<button onclick=\"window.location.href = 'agregarproducto.php?id=".$row['ID']."&img=".$row['url_img']."&price=".$row['precio']."&stock=".$row['stock']."&val=".$row['Descripcion']."&alto=".$row['alto']."';\"
+																		class='btn btn-warning btn-sm' data-toggle='tooltip' data-placement='top' 
+																		title='Editar el producto. Es necesario ingresar la mayoria de los campos.'><i class='fas fa-edit'></i> Editar</button>
+															
+																<button class='btn btn-sm btn-danger' data-toggle='modal' 
+																	data-target='#modalDel".$row['ID']."'
+																	title='Eliminar el producto. Desaparecera por completo.'><i class='fas fa-trash'></i> Eliminar</button>
+																<!-- Modal -->
+																<div class='modal fade' id='modalDel".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
+																	<div class='modal-dialog' role='document'>
+																		<div class='modal-content'>
+																			<div class='modal-header'>
+																				<h5 class='modal-title' id='modalLabel'>Mensaje</h5>
+																				<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+																				<span aria-hidden='true'>&times;</span>
+																				</button>
+																			</div>
+																			<div class='modal-body'>
+																				Seguro deseas borrar este producto?
+																			</div>
+																			<div class='modal-footer'>
+																				<button type='button' class='btn btn-primary' onclick=\"window.location.href='php/deleteProd.php?id=".$row['ID']."';\">Continuar</button>
+																				<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
+																			</div>
+																		</div>
+																	</div>
+																</div>
 
-							                			</div>
-	        										</td>
-		        								</tr>
-		        							";
-		        						}
-		        					 ?>
-		        				</tbody>
-		        			</table>
-		        			<a class='btn btn-primary' href='agregarproducto.php'  role='button'>Agregar producto</a>
+															</div>
+														</td>
+													</tr>
+												";
+											}
+											?>
+									</tbody>
+								</table>
+							</div>
+							<script>
+								function keyPressX(event){
+									//var key = ;
+									if (event.keyCode == 13) {
+										//console.log("se cambio el valor "+event.currentTarget.id);
+										var id = event.currentTarget.id;
+										var val = event.currentTarget.value;
+										//console.log(id);
+										if(id.length < 10){
+											id = id.substr(-1);
+										}else{
+											id = id.substr(-2);
+										}
+										window.location.href = 'php/addEntradas.php?id='+id+"&entrada="+val;
+									}
+								}
+								function keyPressPU(event){
+									//var key = ;
+									if (event.keyCode == 13) {
+										//console.log("se cambio el valor "+event.currentTarget.id);
+										var id = event.currentTarget.id;
+										var val = event.currentTarget.value;
+										//console.log(id);
+										if(id.length < 4){
+											id = id.substr(-1);
+										}else{
+											id = id.substr(-2);
+										}
+										window.location.href = 'php/addPU.php?id='+id+"&pu="+val;
+									}
+								}
+							</script>
+
 	        			</div>
 					</div>
 					<!-- Proveedores LISTO -->
 	        		<div class="row abs block" id="16">
-	        			<div class="col-md-10">
+	        			<div class="col-md-12">
 	        				<h4>Proveedores</h4>
-		        			<table class="tablaAlum">
+		        			<table class="table">
 		        				<thead>
 		        					<tr>
 		        						<th>ID</th>
@@ -299,87 +388,105 @@
 					</div>	
 					<!-- Pedidos LISTO -->
 	        		<div class="row abs block" id="13">
-			          <div class="col-md-10">
+			          <div class="col-md-12">
+					  	<h4>Generar reporte</h4>
+						<form action="php/reporteVentas.php" method="post">
+							<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<!-- <label for=''>Ver por: </label> -->
+											<select id='opt' name='opt' class="form-control">
+												<option value='1'>Día</option>
+												<option value='2'>Mensual</option>
+												<option value='3'>Anual</option>
+												<option value='4'>Todos</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<!-- <label for=''>Fecha: </label> -->
+										<div class="form-group">
+											<input id='date' class="form-control" type="date" name="fecha">
+										</div>
+									</div>
+									<div class="col-md-2">
+										<div class="form-group">
+											<button class="btn btn-outline-secondary btn-block">Aceptar</button>
+										</div>
+									</div>
+							</div>
+						</form>
+
 			            <h4>Pedidos</h4>
-			            <table class="tablaAlum">
-			                <thead>
-			                    <tr>
-			                        <th></th>
-			                        <th>Producto</th>
-			                        <th>Nombre cliente</th>
-			                        <th>Cantidad</th>
-			                        <th>Total</th>
-			                        <th>Fecha pedido</th>
-			                        <th>Fecha entrega</th>
-			                        <th>Opciones</th>
-			                    </tr>
+			            <table class="table">
+							<thead>
+								<tr>
+									<th>Pedido</th>
+									<th>Cliente</th>
+									<th>Fecha</th>
+									<th>Estado</th>
+									<th>Total</th>
+									<th>Acciones</th>
+								</tr>
+
 							</thead>
-			                <tbody>
-			                    <?php
-			                    	$query = mysqli_query($con, 
-		                            	"SELECT ped.ID, p.Descripcion, p.url_img, c.Nombres, c.Apellidos, ped.cantidad, ped.total, ped.Fecha, ped.fecha_entrega FROM productos p, clientes c, pedidos ped WHERE ped.ID_Prod = p.ID AND c.ID = ped.ID_Cliente");
-			                  	 	while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+							<tbody> 
+								<?php 
+
+									$tmp = "";
+									$money = 0;
+									if(@$_GET['date'] != ""){
+										$tmp = $_GET['date'];
+									}
+										
+									$result = mysqli_query($con, "SELECT p.*, c.Nombres, c.Apellidos, p.ID_Cliente FROM pedidos p, clientes c 
+											WHERE p.ID_Cliente = c.ID ".$tmp);
+
+									while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+										$nombreCompleto = $row['Nombres']." ".$row['Apellidos'];
+										$estado = "";
+										$fecha = castDate($row['fecha']);
+		
+										switch($row['status']){
+											case 0:
+												$estado = "En espera";
+												break;
+											case 1:
+												$estado = "Completado";
+												break;
+											
+										} 
 										echo "
 											<tr>
-												<td style='width: 1px;'><img src='".$row['url_img']."' class='' style='width:50px;height:50px;'></td>
-												<td>".$row['Descripcion']."</td>
-												<td>".$row['Nombres']." ".$row['Apellidos']."</td>
-												<td>".$row['cantidad']."</td>
-												<td>".$row['total']."</td>
-												<td>".$row['Fecha']."</td>
-												<td>".$row['fecha_entrega']."</td>
+												<td>#".$row['ID']."</td>
+												<td><a href='perfil.php?id=".$row['ID_Cliente']."'>".$nombreCompleto."</a></td>
+												<td>".$fecha."</td>
+												<td>".$estado."</td>
+												<td><b>$".$row['total'].".00</b> de ".$row['cantidad_total']." productos</td>
 												<td>
-													<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalProv".$row['ID']."'>Eliminar</button>
-							                				
-													<!-- Modal -->
-													<div class='modal fade' id='modalProv".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-														<div class='modal-dialog' role='document'>
-															<div class='modal-content'>
-																<div class='modal-header'>
-																	<h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-																	<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-																	<span aria-hidden='true'>&times;</span>
-																	</button>
-																</div>
-																<div class='modal-body'>
-																	Seguro deseas cancelar esta cotización?
-																</div>
-																<div class='modal-footer'>
-																	<button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarPedido.php?id=".$row['ID']."';\">Continuar</button>
-																	<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-																</div>
-															</div>
-														</div>
-													</div>
+													<a class='btn btn-warning' href='verpedido.php?id=".$row['ID']."' ><i class='fas fa-search'></i> Ver</a>
+													<!-- <button class='btn btn-danger'>Cancelar</button> -->
 												</td>
+												
 											</tr>
-										" ;
-			                        	
+										";
 									}
-			                        
-			                    ?>
-			                </tbody>
-			            </table>
-		            		<form id="form1" action="" method="post">
-		                   	<?php 
-		                    	if (@$co == 0) {
-		                    		echo "
-		                    		<a class='btn btn-primary' href='admin.php?co=1&coti=1' id='2' role='button'>Ver todos</a>
-		                    		";		
-		                    	}else{
-		                    		echo "
-		                    		<a class='btn btn-primary' href='admin.php?coti=1' id='2' role='button'>Ocultar</a>
-		                    		";
-		                    	}
-		                     ?>
-		                    </form>
+								?>
+							</tbody> 
+						</table>
+						<?php
+							echo "
+								<label class='btn btn-primary' onclick=\"window.location.href='sql.php?data=".@$_GET['data']."&mon=".$money."&value=".@$_GET['value']."&date=".urlencode (@$_GET['date']).";' \" >Imprimir</label>
+							";
+						?>
+
 			          </div>
 			        </div>
 			        <!-- Contacto LISTO -->
 	        		<div class="row abs block" id="17">
-			          <div class="col-md-10">
+			          <div class="col-md-12">
 			            <h4>Contacto y ayuda</h4>
-			            <table class="tablaAlum">
+			            <table class="table">
 			                <thead>
 			                    <tr>
 			                        <th>Descripcion</th>
@@ -411,9 +518,9 @@
 			        </div>
 					<!-- Populares LISTO -->
 	        		<div class="row abs block" id="18">
-	        			<div class="col-md-10">
+	        			<div class="col-md-12">
 	        				<h4>Productos populares</h4>
-	        				<table class="tablaAlum">
+	        				<table class="table">
 	        					<thead>
 	        						<tr>
 	        							<th>Producto</th>
@@ -493,6 +600,7 @@
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-slim.min.js"><\/script>')</script>
 		<script src="js/vendor/popper.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
+		<!-- <script src="js/bootstrap.bundle.js"></script> -->
 		<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
 		<script src="js/vendor/holder.min.js"></script>
 		<!-- -->
@@ -714,5 +822,10 @@
 	        notification.show();
 	        <?php } ?>
 	    </script>
+		<script>
+			$(document).ready(function(){
+				$('[data-toggle="tooltip"]').tooltip();   
+			});
+		</script>
 	</body>
 </html>

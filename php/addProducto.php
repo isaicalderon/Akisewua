@@ -6,6 +6,7 @@
 	$categoria = $_POST['categorias'];
 	$precio = $_POST['precio'];
 	$stock = $_POST['stock'];
+	$cod_prov = $_POST['proveedor'];
 	/* edit */
 	$id = $_POST['id'];
 	$status = $_POST['status'];
@@ -34,7 +35,8 @@
 
     
     if ($status!=1) {
-    	mysqli_query($con, "INSERT INTO productos(Descripcion, precio, stock, url_img, alto, Categoria, Fecha_insert) VALUES('$desc', '$precio', '$stock', '$img_url', '$alto', '$categoria','$fechausuario') ") or die("Error".mysqli_error($con));
+    	mysqli_query($con, "INSERT INTO productos(Descripcion, precio, stock, url_img, alto, Categoria,cod_prov, Fecha_insert) 
+			VALUES('$desc', '$precio', '$stock', '$img_url', '$alto', '$categoria', '$cod_prov','$fechausuario') ") or die("Error".mysqli_error($con));
 		$var = "Producto agregado con exito";
 
 	}else{
@@ -43,6 +45,7 @@
 											   precio = '".$precio."',
 											   stock = '".$stock."',
 											   url_img = '".$img_url."',
+											   cod_prov = '".$cod_prov."',
 											   alto= '".$alto."' WHERE ID = ".$id)or die("Error".mysqli_error($con));
 		$var = "Producto editado con exito";
 		

@@ -2,6 +2,8 @@
 	require 'php/conexion.php';
 	require 'php/isLogin.php';
 	require 'php/desencriptar.php';
+	require 'php/fecha.php';
+
 	if ($status) {
 		if (@$_GET['id'] == "") {
 			if($_SESSION['root'] == 1 ){
@@ -20,6 +22,8 @@
 
 	$query = mysqli_query($con, "SELECT * FROM clientes WHERE ID = ".$id);
 	$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+
+	
 ?>
 <!doctype html>
 <html lang="en">
@@ -44,9 +48,15 @@
 	    <link href="css/ns-default.css" rel="stylesheet">
     	<link href="css/ns-style-growl.css" rel="stylesheet">
     	<link href="css/form-validation.css" rel="stylesheet">
-    	
-		<script src="js/modernizr.custom.js"></script>
-	    
+    	<script src="js/modernizr.custom.js"></script>
+
+		<style>
+			.tablaAlum th, td {
+				border: none;
+				text-align: left;
+				padding: 8px;
+			}
+		</style>
 	</head>
 	<body>
 		<header>
@@ -180,67 +190,53 @@
 				<div class="row">
 		          <div class="col-md-12">
 		          	<h4>Pedidos</h4>
-		            <table class="tablaAlum">
+		            <table class="table">
 		                <thead>
 		                    <tr>
-								<th></th>
-								<th>Producto</th>
-								<th>Nombre cliente</th>
-								<th>Cantidad</th>
+								<th>Pedido</th>
+								<th>Fecha</th>
+								<th>Estado</th>
 								<th>Total</th>
-								<th>Fecha pedido</th>
-								<th>Fecha entrega</th>
-								<th>Opciones</th>
-								
+								<th>Acciones</th>
 	                        </tr>
 
 		                </thead>
-		                <tbody>
-							<?php
-								$query = mysqli_query($con, 
-									"SELECT ped.ID, p.Descripcion, p.url_img, c.Nombres, c.Apellidos, ped.cantidad, ped.total, ped.Fecha, ped.fecha_entrega FROM productos p, clientes c, pedidos ped WHERE ped.ID_Prod = p.ID AND c.ID = ped.ID_Cliente");
-								while($row = mysqli_fetch_array($query, MYSQLI_ASSOC)){
+		                <tbody> 
+							<?php 
+								$result = mysqli_query($con, "SELECT * FROM pedidos WHERE ID_Cliente = ".$_SESSION['id_user']);
+
+								while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+									$estado = "";
+
+									$fecha = castDate($row['fecha']);
+	
+									switch($row['status']){
+										case 0:
+											$estado = "En espera";
+											break;
+										case 1:
+											$estado = "Completado";
+											break;
+										
+									}
 									echo "
 										<tr>
-											<td style='width: 1px;'><img src='".$row['url_img']."' class='' style='width:50px;height:50px;'></td>
-											<td>".$row['Descripcion']."</td>
-											<td>".$row['Nombres']." ".$row['Apellidos']."</td>
-											<td>".$row['cantidad']."</td>
-											<td>".$row['total']."</td>
-											<td>".$row['Fecha']."</td>
-											<td>".$row['fecha_entrega']."</td>
+											<td>#".$row['ID']."</td>
+											<td>".$fecha."</td>
+											<td>".$estado."</td>
+											<td><b>$".$row['total'].".00</b> de ".$row['cantidad_total']." productos</td>
 											<td>
-												<button class='btn btn-sm btn-outline-secondary' data-toggle='modal' data-target='#modalProv".$row['ID']."'>Eliminar</button>
-														
-												<!-- Modal -->
-												<div class='modal fade' id='modalProv".$row['ID']."' tabindex='-1' role='dialog' aria-labelledby='modalLabel' aria-hidden='true'>
-													<div class='modal-dialog' role='document'>
-														<div class='modal-content'>
-															<div class='modal-header'>
-																<h5 class='modal-title' id='modalLabel'>Mensaje</h5>
-																<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-																<span aria-hidden='true'>&times;</span>
-																</button>
-															</div>
-															<div class='modal-body'>
-																Seguro deseas cancelar esta cotización?
-															</div>
-															<div class='modal-footer'>
-																<button type='button' class='btn btn-primary' onclick=\"window.location.href='php/cancelarPedido.php?id=".$row['ID']."';\">Continuar</button>
-																<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancelar</button>
-															</div>
-														</div>
-													</div>
-												</div>
+												<a class='btn btn-warning' href='verpedido.php?id=".$row['ID']."' ><i class='fas fa-search'></i> Ver</a>
+												<!-- <button class='btn btn-danger'>Cancelar</button> -->
 											</td>
+											
 										</tr>
-									" ;
-									
+									";
 								}
-								
 							?>
-		                </tbody>
+		                </tbody> 
 		            </table>
+					
 	            		<!--
 	            		<form id="form1" action="" method="post">
 		                    <p>
@@ -252,11 +248,7 @@
 						-->
 		          </div>
 		        </div>
-		        <hr class="mb-4">
-		        <a name="vt"></a>
 
-		        <hr class="mb-4">				
-		        
 
 			</div>
 			<br><br>
